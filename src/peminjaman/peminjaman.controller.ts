@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query, UseGuards, Req } from '@nestjs/common';
 import { PeminjamanService } from './peminjaman.service';
 import { CreatePeminjamanDto } from './dto/create-peminjaman.dto';
 import { UpdatePeminjamanDto } from './dto/update-peminjaman.dto';
@@ -9,12 +9,12 @@ import { user_role } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Peminjaman')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('peminjaman')
 export class PeminjamanController {
-  constructor(private readonly service: PeminjamanService) {}
+  constructor(private readonly service: PeminjamanService) { }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Post()
   @ApiOperation({ summary: 'Tambah peminjaman baru (ADMIN & PETUGAS)' })
@@ -22,6 +22,8 @@ export class PeminjamanController {
     return this.service.create(dto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Get()
   @ApiOperation({ summary: 'Lihat semua data peminjaman atau filter per tanggal' })
@@ -30,13 +32,21 @@ export class PeminjamanController {
     return this.service.findAll(tanggal);
   }
 
-  @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Get(':id')
   @ApiOperation({ summary: 'Lihat detail peminjaman berdasarkan ID' })
   findOne(@Param('id') id: string) {
     return this.service.findOne(Number(id));
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('me')
+  @ApiOperation({ summary: 'Melihat semua riwayat peminjaman pembeli sendiri' })
+  findMyPeminjaman(@Req() req: any) {
+    return this.service.findManyByUser(Number(req.user.id));
+  }
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Put(':id')
   @ApiOperation({ summary: 'Update data peminjaman' })

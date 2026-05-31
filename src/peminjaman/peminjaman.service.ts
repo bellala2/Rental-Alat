@@ -90,4 +90,14 @@ export class PeminjamanService {
       data: dto,
     });
   }
+  async findManyByUser(userId: number) {
+    return this.prisma.peminjaman.findMany({
+      where: {
+        penyewaId: userId, // Memfilter database: "Tampilkan yang kolom penyewaId-nya sama dengan ID saya"
+      },
+      include: {
+        alat: true, // Tetap sertakan data alatnya biar pembeli tahu mereka minjam apa saja
+      },
+    });
+  }
 }

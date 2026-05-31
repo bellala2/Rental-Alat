@@ -35,12 +35,17 @@ let PeminjamanController = class PeminjamanController {
     findOne(id) {
         return this.service.findOne(Number(id));
     }
+    findMyPeminjaman(req) {
+        return this.service.findManyByUser(Number(req.user.id));
+    }
     update(id, dto) {
         return this.service.update(Number(id), dto);
     }
 };
 exports.PeminjamanController = PeminjamanController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Tambah peminjaman baru (ADMIN & PETUGAS)' }),
@@ -50,6 +55,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "create", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Lihat semua data peminjaman atau filter per tanggal' }),
@@ -60,7 +67,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "findAll", null);
 __decorate([
-    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Lihat detail peminjaman berdasarkan ID' }),
     __param(0, (0, common_1.Param)('id')),
@@ -69,6 +75,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "findOne", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, common_1.Get)('me'),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat semua riwayat peminjaman pembeli sendiri' }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PeminjamanController.prototype, "findMyPeminjaman", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update data peminjaman' }),
@@ -80,8 +98,6 @@ __decorate([
 ], PeminjamanController.prototype, "update", null);
 exports.PeminjamanController = PeminjamanController = __decorate([
     (0, swagger_1.ApiTags)('Peminjaman'),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)('peminjaman'),
     __metadata("design:paramtypes", [peminjaman_service_1.PeminjamanService])
 ], PeminjamanController);

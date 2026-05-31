@@ -88,6 +88,16 @@ let PeminjamanService = class PeminjamanService {
             data: dto,
         });
     }
+    async findManyByUser(userId) {
+        return this.prisma.peminjaman.findMany({
+            where: {
+                penyewaId: userId,
+            },
+            include: {
+                alat: true,
+            },
+        });
+    }
 };
 exports.PeminjamanService = PeminjamanService;
 exports.PeminjamanService = PeminjamanService = __decorate([
