@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model penyewa {
+  id         Int          @id @default(autoincrement())
+  no_hp      String       @unique(map: "Penyewa_nohp_key") 
+  name       String
+  email      String?      @unique(map: "Penyewa_email_key")
+  alamat     String       
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  peminjaman peminjaman[]
+  user       user?
+}
+
+model alat {
+  id         Int          @id @default(autoincrement())
+  nama_alat  String       
+  harga_sewa Int          
+  stok       Int          
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  peminjaman peminjaman[]
+}
+
+model peminjaman {
+  id                       Int               @id @default(autoincrement())
+  penyewaId                Int               
+  alatId                   Int 
+  lama_sewa                Int
+  total_harga              Int  
+  tanggalPinjam            DateTime          @default(now())
+  tanggalKembali           DateTime?        
+  status                   peminjaman_status @default(DISEWA)
+  alat                     alat              @relation(fields: [alatId], references: [id], map: "Peminjaman_alatId_fkey")
+  penyewa                  penyewa           @relation(fields: [penyewaId], references: [id], map: "Peminjaman_penyewaId_fkey")
+  pengembalian             pengembalian?
+
+  @@index([alatId], map: "Peminjaman_alatId_fkey")
+  @@index([penyewaId], map: "Peminjaman_penyewaId_fkey")
+}
+
+model pengembalian {
+  id             Int        @id @default(autoincrement())
+  peminjamanId   Int        @unique(map: "Pengembalian_peminjamanId_key")
+  tanggalKembali DateTime   @default(now())
+  totalDenda     Int        @default(0) // Tambahan biar otomatis hitung denda
+  createdAt      DateTime   @default(now())
+  peminjaman     peminjaman @relation(fields: [peminjamanId], references: [id], onDelete: Cascade, map: "Pengembalian_peminjamanId_fkey")
+  @@index([peminjamanId], map: "Pengembalian_peminjamanId_idx")
+}
+
+model user {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique(map: "User_username_key")
+  password  String
+  role      user_role @default(PEMBELI)
+  penyewaId Int?      @unique(map: "User_penyewaId_key") 
+  createdAt DateTime  @default(now())
+  penyewa   penyewa?  @relation(fields: [penyewaId], references: [id], map: "User_penyewaId_fkey")
+}
+
+enum user_role {
+  ADMIN
+  PETUGAS
+  PEMBELI
+}
+
+enum peminjaman_status {
+  DISEWA
+  DIKEMBALIKAN
+}
