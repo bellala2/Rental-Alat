@@ -5,48 +5,48 @@ export declare class PenyewaController {
     private readonly penyewaService;
     constructor(penyewaService: PenyewaService);
     create(dto: CreatePenyewaDto): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     findAll(): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }[]>;
     findOne(id: string): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     update(id: string, dto: UpdatePenyewaDto): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     remove(id: string): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
 }

@@ -5,36 +5,36 @@ export declare class AlatController {
     private readonly alatService;
     constructor(alatService: AlatService);
     create(createAlatDto: CreateAlatDto): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     findAll(): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, updateAlatDto: UpdateAlatDto): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         message: string;

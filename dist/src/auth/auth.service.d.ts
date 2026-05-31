@@ -14,8 +14,8 @@ export declare class AuthService {
         role?: 'ADMIN' | 'PETUGAS' | 'PEMBELI';
         penyewaId?: number;
     }, currentUserRole?: string): Promise<{
-        id: number;
         createdAt: Date;
+        id: number;
         penyewaId: number | null;
         username: string;
         password: string;

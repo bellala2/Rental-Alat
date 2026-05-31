@@ -18,7 +18,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: 'RentalBar4ng',
+            secretOrKey: process.env.JWT_SECRET || 'RentalBar4ng',
         });
     }
     validate(payload) {

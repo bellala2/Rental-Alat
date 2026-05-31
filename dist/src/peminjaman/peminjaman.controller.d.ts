@@ -9,25 +9,25 @@ export declare class PeminjamanController {
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
+        status: import(".prisma/client").$Enums.peminjaman_status;
         total_harga: number;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     findAll(tanggal?: string): Promise<({
         penyewa: {
-            name: string;
-            id: number;
             no_hp: string;
+            name: string;
             email: string | null;
             alamat: string;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
         };
         alat: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
@@ -37,25 +37,25 @@ export declare class PeminjamanController {
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
+        status: import(".prisma/client").$Enums.peminjaman_status;
         total_harga: number;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
     })[]>;
     findOne(id: string): Promise<{
         penyewa: {
-            name: string;
-            id: number;
             no_hp: string;
+            name: string;
             email: string | null;
             alamat: string;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
         };
         alat: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
@@ -65,19 +65,19 @@ export declare class PeminjamanController {
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
+        status: import(".prisma/client").$Enums.peminjaman_status;
         total_harga: number;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     update(id: string, dto: UpdatePeminjamanDto): Promise<{
         id: number;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
+        status: import(".prisma/client").$Enums.peminjaman_status;
         total_harga: number;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
 }

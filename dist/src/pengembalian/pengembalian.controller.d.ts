@@ -4,46 +4,46 @@ export declare class PengembalianController {
     private readonly pengembalianService;
     constructor(pengembalianService: PengembalianService);
     create(createPengembalianDto: CreatePengembalianDto): Promise<{
-        id: number;
-        peminjamanId: number;
-        tanggalKembali: Date;
-        totalDenda: number;
         createdAt: Date;
+        id: number;
+        tanggalKembali: Date;
+        peminjamanId: number;
+        totalDenda: number;
     }>;
     findAll(): Promise<({
         peminjaman: {
             penyewa: {
-                name: string;
-                id: number;
-                createdAt: Date;
                 no_hp: string;
+                name: string;
                 email: string | null;
                 alamat: string;
-                updatedAt: Date;
-            };
-            alat: {
-                id: number;
                 createdAt: Date;
                 updatedAt: Date;
+                id: number;
+            };
+            alat: {
+                createdAt: Date;
+                updatedAt: Date;
+                id: number;
                 nama_alat: string;
                 harga_sewa: number;
                 stok: number;
             };
         } & {
             id: number;
-            tanggalKembali: Date | null;
             penyewaId: number;
             alatId: number;
             lama_sewa: number;
+            status: import(".prisma/client").$Enums.peminjaman_status;
             total_harga: number;
             tanggalPinjam: Date;
-            status: import(".prisma/client").$Enums.peminjaman_status;
+            tanggalKembali: Date | null;
         };
     } & {
-        id: number;
-        peminjamanId: number;
-        tanggalKembali: Date;
-        totalDenda: number;
         createdAt: Date;
+        id: number;
+        tanggalKembali: Date;
+        peminjamanId: number;
+        totalDenda: number;
     })[]>;
 }

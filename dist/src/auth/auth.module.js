@@ -23,7 +23,7 @@ exports.AuthModule = AuthModule = __decorate([
             prisma_module_1.PrismaModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
-                secret: 'RentalBar4ng',
+                secret: process.env.JWT_SECRET || 'RentalBar4ng',
                 signOptions: { expiresIn: '1h' },
             }),
         ],

@@ -5,48 +5,48 @@ export declare class PenyewaService {
     private prisma;
     constructor(prisma: PrismaService);
     create(dto: CreatePenyewaDto): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     findAll(): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }[]>;
     findOne(id: number): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     update(id: number, dto: UpdatePenyewaDto): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     remove(id: number): Promise<{
-        id: number;
         no_hp: string;
         name: string;
         email: string | null;
         alamat: string;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
 }
