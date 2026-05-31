@@ -93,10 +93,10 @@ export class PeminjamanService {
   async findManyByUser(userId: number) {
     return this.prisma.peminjaman.findMany({
       where: {
-        penyewaId: userId, // Memfilter database: "Tampilkan yang kolom penyewaId-nya sama dengan ID saya"
+        penyewaId: userId, 
       },
       include: {
-        alat: true, // Tetap sertakan data alatnya biar pembeli tahu mereka minjam apa saja
+        alat: true, 
       },
     });
   }
