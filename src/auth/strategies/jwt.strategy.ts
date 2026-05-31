@@ -9,7 +9,7 @@ export class JwtStrategy extends
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: 'RentalBar4ng',
+            secretOrKey: process.env.JWT_SECRET || 'RentalBar4ng',
         });
     }
     validate(payload: any) {
