@@ -29,7 +29,10 @@ let PenyewaController = class PenyewaController {
     create(dto) {
         return this.penyewaService.create(dto);
     }
-    findAll() {
+    findAll(search) {
+        if (search) {
+            return this.penyewaService.findByName(search);
+        }
         return this.penyewaService.findAll();
     }
     findOne(id) {
@@ -52,8 +55,10 @@ __decorate([
 ], PenyewaController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, swagger_1.ApiQuery)({ name: 'search', required: false, description: 'Cari penyewa berdasarkan nama' }),
+    __param(0, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PenyewaController.prototype, "findAll", null);
 __decorate([

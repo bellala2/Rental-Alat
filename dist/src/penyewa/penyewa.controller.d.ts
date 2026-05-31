@@ -13,7 +13,7 @@ export declare class PenyewaController {
         updatedAt: Date;
         id: number;
     }>;
-    findAll(): Promise<{
+    findAll(search?: string): Promise<{
         no_hp: string;
         name: string;
         email: string | null;

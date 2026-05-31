@@ -22,6 +22,15 @@ export declare class PenyewaService {
         updatedAt: Date;
         id: number;
     }[]>;
+    findByName(name: string): Promise<{
+        no_hp: string;
+        name: string;
+        email: string | null;
+        alamat: string;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+    }[]>;
     findOne(id: number): Promise<{
         no_hp: string;
         name: string;

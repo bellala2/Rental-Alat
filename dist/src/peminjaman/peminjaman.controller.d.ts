@@ -16,18 +16,18 @@ export declare class PeminjamanController {
     }>;
     findAll(tanggal?: string): Promise<({
         penyewa: {
-            name: string;
-            id: number;
             no_hp: string;
+            name: string;
             email: string | null;
             alamat: string;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
         };
         alat: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
@@ -44,18 +44,18 @@ export declare class PeminjamanController {
     })[]>;
     findOne(id: string): Promise<{
         penyewa: {
-            name: string;
-            id: number;
             no_hp: string;
+            name: string;
             email: string | null;
             alamat: string;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
         };
         alat: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
@@ -72,9 +72,9 @@ export declare class PeminjamanController {
     }>;
     findMyPeminjaman(req: any): Promise<({
         alat: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;

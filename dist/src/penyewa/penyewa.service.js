@@ -22,6 +22,15 @@ let PenyewaService = class PenyewaService {
     async findAll() {
         return this.prisma.penyewa.findMany({ orderBy: { id: 'desc' } });
     }
+    async findByName(name) {
+        return this.prisma.penyewa.findMany({
+            where: {
+                name: {
+                    contains: name,
+                },
+            },
+        });
+    }
     async findOne(id) {
         const dataPenyewa = await this.prisma.penyewa.findUnique({ where: { id } });
         if (!dataPenyewa)

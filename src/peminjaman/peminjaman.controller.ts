@@ -45,6 +45,7 @@ export class PeminjamanController {
   findMyPeminjaman(@Req() req: any) {
     return this.service.findManyByUser(Number(req.user.id));
   }
+  
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
