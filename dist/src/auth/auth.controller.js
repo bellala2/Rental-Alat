@@ -26,6 +26,9 @@ let AuthController = class AuthController {
         const roleYgLogin = 'ADMIN';
         return this.authService.register(dto, roleYgLogin);
     }
+    registerPembeli(dto) {
+        return this.authService.registerPembeliMandiri(dto);
+    }
     login(dto) {
         console.log('--- DEBUG LOGIN ---');
         console.log('Isi DTO:', dto);
@@ -36,14 +39,23 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('register'),
-    (0, swagger_1.ApiOperation)({ summary: 'Mendaftarkan user baru' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Mendaftarkan user baru oleh Admin' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
 __decorate([
+    (0, common_1.Post)('register-pembeli'),
+    (0, swagger_1.ApiOperation)({ summary: 'Pembeli melakukan pendaftaran mandiri' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "registerPembeli", null);
+__decorate([
     (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: 'User / Admin melakukan login' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),

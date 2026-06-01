@@ -10,14 +10,20 @@ export class AuthController {
     constructor(private authService: AuthService) { }
 
     @Post('register')
-    @ApiOperation({ summary: 'Mendaftarkan user baru' })
+    @ApiOperation({ summary: 'Mendaftarkan user baru oleh Admin' })
     register(@Body() dto: RegisterDto) {
-
         const roleYgLogin = 'ADMIN';
         return this.authService.register(dto, roleYgLogin);
     }
 
+    @Post('register-pembeli')
+    @ApiOperation({ summary: 'Pembeli melakukan pendaftaran mandiri' })
+    registerPembeli(@Body() dto: any) { 
+        return this.authService.registerPembeliMandiri(dto);
+    }
+
     @Post('login')
+    @ApiOperation({ summary: 'User / Admin melakukan login' })
     login(@Body() dto: LoginDto) {
         console.log('--- DEBUG LOGIN ---');
         console.log('Isi DTO:', dto);

@@ -14,11 +14,23 @@ export declare class AuthService {
         role?: 'ADMIN' | 'PETUGAS' | 'PEMBELI';
         penyewaId?: number;
     }, currentUserRole?: string): Promise<{
-        createdAt: Date;
         id: number;
-        penyewaId: number | null;
         username: string;
+        penyewaId: number | null;
         password: string;
         role: import(".prisma/client").$Enums.user_role;
+        createdAt: Date;
+    }>;
+    registerPembeliMandiri(dto: any): Promise<{
+        statusCode: number;
+        message: string;
+        data: {
+            id: number;
+            username: string;
+            penyewaId: number | null;
+            password: string;
+            role: import(".prisma/client").$Enums.user_role;
+            createdAt: Date;
+        };
     }>;
 }
