@@ -43,4 +43,5 @@ export declare class AlatController {
     remove(id: string): Promise<{
         message: string;
     }>;
+    private prismaServiceAlat;
 }

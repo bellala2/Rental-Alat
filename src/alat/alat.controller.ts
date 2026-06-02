@@ -38,10 +38,22 @@ export class AlatController {
     }),
   )
   @Post()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        nama_alat: { type: 'string' },
+        harga_sewa: { type: 'number' },
+        stok: { type: 'number' },
+        foto_alat: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   @ApiOperation({ summary: 'Tambah alat gunung baru beserta fotonya' })
   create(
     @Body() createAlatDto: CreateAlatDto,
-    @UploadedFile() file: any // 🌟 Ditambahkan biar rute POST bisa nangkep file gambar
+    @UploadedFile() file: any
   ) {
     if (file) {
       createAlatDto.foto_alat = file.filename;
@@ -58,14 +70,31 @@ export class AlatController {
   @Get(':id')
   @ApiOperation({ summary: 'Melihat detail satu alat gunung' })
   findOne(@Param('id') id: string) {
-    return this.alatService.findOne(+id);
+    return this.prismaServiceAlat(id); // Mengarah ke service findOne
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
-  @UseInterceptors(FileInterceptor('foto_alat', { /* ...config storage... */ }))
+  @UseInterceptors(
+    FileInterceptor('foto_alat', {
+      storage: diskStorage({
+        destination: './uploads/alat',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `alat-${uniqueSuffix}${ext}`); // 🌟 Sekarang diskStorage PUT terisi lengkap!
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+          return callback(new BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
   @Put(':id')
-  @ApiConsumes('multipart/form-data') // 🌟 Wajib ditambahkan agar Swagger tahu ini untuk upload file
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
@@ -73,7 +102,7 @@ export class AlatController {
         nama_alat: { type: 'string' },
         harga_sewa: { type: 'number' },
         stok: { type: 'number' },
-        foto_alat: { type: 'string', format: 'binary' }, // 🌟 Ini yang memicu tombol "Choose File" di Swagger
+        foto_alat: { type: 'string', format: 'binary' },
       },
     },
   })
@@ -94,5 +123,9 @@ export class AlatController {
   @ApiOperation({ summary: 'Menghapus alat gunung dari database' })
   remove(@Param('id') id: string) {
     return this.alatService.remove(+id);
+  }
+
+  private prismaServiceAlat(id: string) {
+     return this.alatService.findOne(+id);
   }
 }

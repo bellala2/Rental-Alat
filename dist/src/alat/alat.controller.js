@@ -39,7 +39,7 @@ let AlatController = class AlatController {
         return this.alatService.findAll();
     }
     findOne(id) {
-        return this.alatService.findOne(+id);
+        return this.prismaServiceAlat(id);
     }
     update(id, updateAlatDto, file) {
         if (file) {
@@ -49,6 +49,9 @@ let AlatController = class AlatController {
     }
     remove(id) {
         return this.alatService.remove(+id);
+    }
+    prismaServiceAlat(id) {
+        return this.alatService.findOne(+id);
     }
 };
 exports.AlatController = AlatController;
@@ -72,6 +75,18 @@ __decorate([
         },
     })),
     (0, common_1.Post)(),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                nama_alat: { type: 'string' },
+                harga_sewa: { type: 'number' },
+                stok: { type: 'number' },
+                foto_alat: { type: 'string', format: 'binary' },
+            },
+        },
+    }),
     (0, swagger_1.ApiOperation)({ summary: 'Tambah alat gunung baru beserta fotonya' }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
@@ -97,7 +112,22 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {})),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/alat',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `alat-${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
+            }
+            callback(null, true);
+        },
+    })),
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiBody)({
