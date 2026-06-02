@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PeminjamanController = void 0;
 const common_1 = require("@nestjs/common");
 const peminjaman_service_1 = require("./peminjaman.service");
-const create_peminjaman_dto_1 = require("./dto/create-peminjaman.dto");
 const update_peminjaman_dto_1 = require("./dto/update-peminjaman.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
@@ -23,16 +22,37 @@ const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
 const updata_pembayarans_status_dto_1 = require("./dto/updata-pembayarans-status-dto");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 let PeminjamanController = class PeminjamanController {
     constructor(service) {
         this.service = service;
     }
-    create(dto) {
-        return this.service.create(dto);
+    create(body, file) {
+        const penyewaIdNumber = Number(body.penyewaId);
+        const alatIdNumber = Number(body.alatId);
+        const lamaSewaNumber = Number(body.lama_sewa);
+        const namaFoto = file ? file.filename : null;
+        return this.service.create({
+            penyewaId: penyewaIdNumber,
+            alatId: alatIdNumber,
+            lama_sewa: lamaSewaNumber,
+            bukti_pembayaran: namaFoto,
+        });
     }
-    customerCreate(dto, req) {
+    customerCreate(body, req, file) {
         const userId = Number(req.user.id);
-        return this.service.customerCreate(dto, userId);
+        const alatIdNumber = Number(body.alatId);
+        const lamaSewaNumber = Number(body.lama_sewa);
+        const namaFoto = file ? file.filename : null;
+        const dtoData = {
+            penyewaId: userId,
+            alatId: alatIdNumber,
+            lama_sewa: lamaSewaNumber,
+            bukti_pembayaran: namaFoto,
+        };
+        return this.service.customerCreate(dtoData, userId);
     }
     findAll(tanggal) {
         return this.service.findAll(tanggal);
@@ -56,21 +76,88 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Tambah peminjaman baru (ADMIN & PETUGAS)' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Tambah peminjaman baru (ADMIN & PETUGAS) + Upload File' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                penyewaId: { type: 'number', description: 'ID customer yang menyewa' },
+                alatId: { type: 'number', description: 'ID alat gunung yang disewa' },
+                lama_sewa: { type: 'number', description: 'Berapa hari lama sewa' },
+                bukti_pembayaran: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Upload file bukti bayar dari customer',
+                },
+            },
+            required: ['penyewaId', 'alatId', 'lama_sewa', 'bukti_pembayaran'],
+        },
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('bukti_pembayaran', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/pembayaran',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `admin-bayar-${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
+            }
+            callback(null, true);
+        },
+    })),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_peminjaman_dto_1.CreatePeminjamanDto]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('customer'),
-    (0, swagger_1.ApiOperation)({ summary: 'Customer mengajukan sewa mandiri + kirim link bukti bayar' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Customer mengajukan sewa mandiri + upload bukti bayar' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                alatId: { type: 'number', description: 'ID alat gunung yang mau disewa' },
+                lama_sewa: { type: 'number', description: 'Berapa hari lama sewa' },
+                bukti_pembayaran: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Upload file foto bukti transfer pembayaran',
+                },
+            },
+            required: ['alatId', 'lama_sewa', 'bukti_pembayaran'],
+        },
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('bukti_pembayaran', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/pembayaran',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `cust-bayar-${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
+            }
+            callback(null, true);
+        },
+    })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "customerCreate", null);
 __decorate([

@@ -7,9 +7,9 @@ import { UpdatePengembalianDto } from './dto/update-pengembalian.dto';
 export class PengembalianService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: { peminjamanId: number; totalDenda?: number; foto_kembali?: string }) {
+  async create(dto: CreatePengembalianDto & { foto_kembali?: string }) {
     const peminjamanExist = await this.prisma.peminjaman.findUnique({ 
-      where: { id: dto.peminjamanId } 
+      where: { id: Number(dto.peminjamanId) } 
     });
     
     if (!peminjamanExist) {
@@ -20,11 +20,32 @@ export class PengembalianService {
       throw new BadRequestException('Alat pada transaksi ini sudah berstatus dikembalikan!');
     }
 
+    // ─── 🧮 LOGIKA DENDA (OTOMATIS / MANUAL) ───
+    let dendaFinal = dto.totalDenda ? Number(dto.totalDenda) : 0;
+
+    // Jika admin tidak menginput denda (atau diisi 0), sistem hitung otomatis berdasarkan hari telat
+    if (dendaFinal === 0) {
+      const tanggalSeharusnyaKembali = new Date(peminjamanExist.tanggalKembali);
+      const tanggalHariIni = new Date(); 
+
+      tanggalSeharusnyaKembali.setHours(0, 0, 0, 0);
+      tanggalHariIni.setHours(0, 0, 0, 0);
+
+      if (tanggalHariIni > tanggalSeharusnyaKembali) {
+        const selisihWaktu = tanggalHariIni.getTime() - tanggalSeharusnyaKembali.getTime();
+        const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24)); 
+
+        const TARIF_DENDA_PER_HARI = 10000; // Ubah tarif sesuai kebutuhan kelompokmu
+        dendaFinal = selisihHari * TARIF_DENDA_PER_HARI;
+      }
+    }
+    // ───────────────────────────────────────────
+
     return this.prisma.$transaction(async (tx) => {
       const dataPengembalian = await tx.pengembalian.create({
         data: {
-          peminjamanId: dto.peminjamanId,
-          totalDenda: dto.totalDenda || 0,
+          peminjamanId: Number(dto.peminjamanId),
+          totalDenda: dendaFinal, // 🌟 Menggunakan hasil dendaFinal (bisa manual / otomatis)
           foto_kembali: dto.foto_kembali || null, 
           tanggalKembali: new Date(),
         }
@@ -36,7 +57,7 @@ export class PengembalianService {
       });
 
       await tx.peminjaman.update({
-        where: { id: dto.peminjamanId },
+        where: { id: Number(dto.peminjamanId) },
         data: {
           status: 'DIKEMBALIKAN' as any 
         }
@@ -46,6 +67,7 @@ export class PengembalianService {
     });
   }
   
+
   async findAll() {
     return this.prisma.pengembalian.findMany({
       include: { peminjaman: { include: { alat: true, penyewa: true } } },

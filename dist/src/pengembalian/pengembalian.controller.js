@@ -57,7 +57,7 @@ __decorate([
             type: 'object',
             properties: {
                 peminjamanId: { type: 'number', description: 'ID dari transaksi peminjaman' },
-                totalDenda: { type: 'number', description: 'Total denda jika terlambat (opsional)', default: 0 },
+                totalDenda: { type: 'number', description: 'Total denda jika ada (opsional)', default: 0 },
                 foto_kembali: {
                     type: 'string',
                     format: 'binary',

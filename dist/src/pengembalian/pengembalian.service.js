@@ -18,7 +18,7 @@ let PengembalianService = class PengembalianService {
     }
     async create(dto) {
         const peminjamanExist = await this.prisma.peminjaman.findUnique({
-            where: { id: dto.peminjamanId }
+            where: { id: Number(dto.peminjamanId) }
         });
         if (!peminjamanExist) {
             throw new common_1.NotFoundException('Data peminjaman tidak ditemukan!');
@@ -26,11 +26,24 @@ let PengembalianService = class PengembalianService {
         if (peminjamanExist.status === 'DIKEMBALIKAN') {
             throw new common_1.BadRequestException('Alat pada transaksi ini sudah berstatus dikembalikan!');
         }
+        let dendaFinal = dto.totalDenda ? Number(dto.totalDenda) : 0;
+        if (dendaFinal === 0) {
+            const tanggalSeharusnyaKembali = new Date(peminjamanExist.tanggalKembali);
+            const tanggalHariIni = new Date();
+            tanggalSeharusnyaKembali.setHours(0, 0, 0, 0);
+            tanggalHariIni.setHours(0, 0, 0, 0);
+            if (tanggalHariIni > tanggalSeharusnyaKembali) {
+                const selisihWaktu = tanggalHariIni.getTime() - tanggalSeharusnyaKembali.getTime();
+                const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
+                const TARIF_DENDA_PER_HARI = 10000;
+                dendaFinal = selisihHari * TARIF_DENDA_PER_HARI;
+            }
+        }
         return this.prisma.$transaction(async (tx) => {
             const dataPengembalian = await tx.pengembalian.create({
                 data: {
-                    peminjamanId: dto.peminjamanId,
-                    totalDenda: dto.totalDenda || 0,
+                    peminjamanId: Number(dto.peminjamanId),
+                    totalDenda: dendaFinal,
                     foto_kembali: dto.foto_kembali || null,
                     tanggalKembali: new Date(),
                 }
@@ -40,7 +53,7 @@ let PengembalianService = class PengembalianService {
                 data: { stok: { increment: 1 } }
             });
             await tx.peminjaman.update({
-                where: { id: dto.peminjamanId },
+                where: { id: Number(dto.peminjamanId) },
                 data: {
                     status: 'DIKEMBALIKAN'
                 }

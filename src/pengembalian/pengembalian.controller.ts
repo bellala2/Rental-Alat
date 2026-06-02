@@ -20,13 +20,13 @@ export class PengembalianController {
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Post()
   @ApiOperation({ summary: 'Menambahkan verifikasi pengembalian barang + foto (ADMIN & PETUGAS)' })
-  @ApiConsumes('multipart/form-data') 
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
         peminjamanId: { type: 'number', description: 'ID dari transaksi peminjaman' },
-        totalDenda: { type: 'number', description: 'Total denda jika terlambat (opsional)', default: 0 },
+        totalDenda: { type: 'number', description: 'Total denda jika ada (opsional)', default: 0 },
         foto_kembali: {
           type: 'string',
           format: 'binary',
@@ -39,7 +39,7 @@ export class PengembalianController {
   @UseInterceptors(
     FileInterceptor('foto_kembali', {
       storage: diskStorage({
-        destination: './uploads/pengembalian', 
+        destination: './uploads/pengembalian',
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
@@ -54,14 +54,18 @@ export class PengembalianController {
       },
     }),
   )
+  
   async create(
-    @Body() body: { peminjamanId: string; totalDenda?: string },
+    // 🌟 Di sini kita tangkap sebagai string/any dulu dari form-data biar lolos Class-Validator
+    @Body() body: any, 
     @UploadedFile() file: any, 
   ) {
+    // 🌟 Di sini kita konversi paksa menjadi Number secara aman sebelum dilempar ke service
     const peminjamanIdNumber = Number(body.peminjamanId);
     const totalDendaNumber = body.totalDenda ? Number(body.totalDenda) : 0;
     const namaFoto = file ? file.filename : null;
 
+    // Pastikan data yang dikirim ke service sudah berupa angka murni (Number)
     return this.pengembalianService.create({
       peminjamanId: peminjamanIdNumber,
       totalDenda: totalDendaNumber,
@@ -77,7 +81,7 @@ export class PengembalianController {
   findAll() {
     return this.pengembalianService.findAll();
   }
-  
+
   @Get(':id')
   @ApiOperation({ summary: 'Melihat detail satu data pengembalian' })
   findOne(@Param('id') id: string) {
