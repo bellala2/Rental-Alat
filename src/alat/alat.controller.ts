@@ -8,8 +8,27 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { user_role } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import * as streamifier from 'streamifier';
+
+cloudinary.config({
+  cloud_name: 'dxkqfjggn',
+  api_key: '744226821154857',
+  api_secret: 'MEDraFtAfC7C030URUcpAfmDlco',
+});
+
+const uploadToCloudinary = (file: any): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const cld_upload_stream = cloudinary.uploader.upload_stream(
+      { folder: 'rental_alat' }, // Nama folder di Cloudinary kamu nanti
+      (error: any, result: any) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(file.buffer).pipe(cld_upload_stream);
+  });
+};
 
 @Controller('alat')
 @ApiTags('Alat')
@@ -19,24 +38,7 @@ export class AlatController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
-  @UseInterceptors(
-    FileInterceptor('foto_alat', {
-      storage: diskStorage({
-        destination: './uploads/alat',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `alat-${uniqueSuffix}${ext}`);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-          return callback(new BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
-        }
-        callback(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('foto_alat')) // 🌟 Tanpa diskStorage lokal, langsung tangkap di memory
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -51,12 +53,11 @@ export class AlatController {
     },
   })
   @ApiOperation({ summary: 'Tambah alat gunung baru beserta fotonya' })
-  create(
-    @Body() createAlatDto: CreateAlatDto,
-    @UploadedFile() file: any
-  ) {
+  async create(@Body() createAlatDto: CreateAlatDto, @UploadedFile() file: any) {
     if (file) {
-      createAlatDto.foto_alat = file.filename;
+      // 🌟 Upload ke Cloudinary dan ambil URL-nya
+      const cloudinaryResult = await uploadToCloudinary(file);
+      createAlatDto.foto_alat = cloudinaryResult.secure_url; // Menyimpan link URL utuh (https://...)
     }
     return this.alatService.create(createAlatDto);
   }
@@ -70,29 +71,12 @@ export class AlatController {
   @Get(':id')
   @ApiOperation({ summary: 'Melihat detail satu alat gunung' })
   findOne(@Param('id') id: string) {
-    return this.prismaServiceAlat(id); // Mengarah ke service findOne
+    return this.alatService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
-  @UseInterceptors(
-    FileInterceptor('foto_alat', {
-      storage: diskStorage({
-        destination: './uploads/alat',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `alat-${uniqueSuffix}${ext}`); // 🌟 Sekarang diskStorage PUT terisi lengkap!
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-          return callback(new BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
-        }
-        callback(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('foto_alat'))
   @Put(':id')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -106,13 +90,12 @@ export class AlatController {
       },
     },
   })
-  update(
-    @Param('id') id: string,
-    @Body() updateAlatDto: UpdateAlatDto,
-    @UploadedFile() file: any
-  ) {
+  @ApiOperation({ summary: 'Mengedit data alat gunung beserta fotonya' })
+  async update(@Param('id') id: string, @Body() updateAlatDto: UpdateAlatDto, @UploadedFile() file: any) {
     if (file) {
-      updateAlatDto.foto_alat = file.filename;
+      // 🌟 Upload ke Cloudinary dan ambil URL-nya
+      const cloudinaryResult = await uploadToCloudinary(file);
+      updateAlatDto.foto_alat = cloudinaryResult.secure_url; // Menyimpan link URL utuh (https://...)
     }
     return this.alatService.update(+id, updateAlatDto);
   }
@@ -123,9 +106,5 @@ export class AlatController {
   @ApiOperation({ summary: 'Menghapus alat gunung dari database' })
   remove(@Param('id') id: string) {
     return this.alatService.remove(+id);
-  }
-
-  private prismaServiceAlat(id: string) {
-     return this.alatService.findOne(+id);
   }
 }
