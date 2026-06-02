@@ -148,14 +148,6 @@ export class PeminjamanController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Get('me')
-  @ApiOperation({ summary: 'Melihat semua riwayat peminjaman pembeli sendiri' })
-  findMyPeminjaman(@Req() req: any) {
-    return this.service.findManyByUser(Number(req.user.id));
-  }
-  
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Put(':id')
   @ApiOperation({ summary: 'Update data peminjaman' })

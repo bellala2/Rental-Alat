@@ -60,9 +60,6 @@ let PeminjamanController = class PeminjamanController {
     findOne(id) {
         return this.service.findOne(Number(id));
     }
-    findMyPeminjaman(req) {
-        return this.service.findManyByUser(Number(req.user.id));
-    }
     update(id, dto) {
         return this.service.update(Number(id), dto);
     }
@@ -180,16 +177,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "findOne", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, common_1.Get)('me'),
-    (0, swagger_1.ApiOperation)({ summary: 'Melihat semua riwayat peminjaman pembeli sendiri' }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], PeminjamanController.prototype, "findMyPeminjaman", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

@@ -143,17 +143,6 @@ let PeminjamanService = class PeminjamanService {
             data: dto,
         });
     }
-    async findManyByUser(userId) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        return this.prisma.peminjaman.findMany({
-            where: {
-                penyewaId: user?.penyewaId || 0,
-            },
-            include: {
-                alat: true,
-            },
-        });
-    }
 };
 exports.PeminjamanService = PeminjamanService;
 exports.PeminjamanService = PeminjamanService = __decorate([
