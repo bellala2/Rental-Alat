@@ -31,7 +31,7 @@ export declare class AlatService {
         updatedAt: Date;
         id: number;
     }>;
-    update(id: number, dto: UpdateAlatDto): Promise<{
+    update(id: number, updateAlatDto: UpdateAlatDto): Promise<{
         nama_alat: string;
         harga_sewa: number;
         stok: number;

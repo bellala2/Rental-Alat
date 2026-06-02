@@ -42,15 +42,20 @@ let AlatService = class AlatService {
         }
         return alat;
     }
-    async update(id, dto) {
-        await this.findOne(id);
+    async update(id, updateAlatDto) {
+        const alatLama = await this.prisma.alat.findUnique({
+            where: { id },
+        });
+        if (!alatLama) {
+            throw new common_1.NotFoundException(`Alat dengan ID ${id} tidak ditemukan`);
+        }
         return this.prisma.alat.update({
             where: { id },
             data: {
-                nama_alat: dto.nama_alat,
-                harga_sewa: dto.harga_sewa ? Number(dto.harga_sewa) : undefined,
-                stok: dto.stok ? Number(dto.stok) : undefined,
-                foto_alat: dto.foto_alat,
+                nama_alat: updateAlatDto.nama_alat,
+                harga_sewa: updateAlatDto.harga_sewa ? +updateAlatDto.harga_sewa : undefined,
+                stok: updateAlatDto.stok ? +updateAlatDto.stok : undefined,
+                foto_alat: updateAlatDto.foto_alat !== undefined ? updateAlatDto.foto_alat : alatLama.foto_alat,
             },
         });
     }

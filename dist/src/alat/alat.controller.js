@@ -42,8 +42,6 @@ let AlatController = class AlatController {
         return this.alatService.findOne(+id);
     }
     update(id, updateAlatDto, file) {
-        console.log('ISI BODY:', updateAlatDto);
-        console.log('ISI FILE YANG DIUPLOAD:', file);
         if (file) {
             updateAlatDto.foto_alat = file.filename;
         }
@@ -99,24 +97,20 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/alat',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = (0, path_1.extname)(file.originalname);
-                callback(null, `alat-${uniqueSuffix}${ext}`);
-            },
-        }),
-        fileFilter: (req, file, callback) => {
-            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
-            }
-            callback(null, true);
-        },
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {})),
     (0, common_1.Put)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Mengubah data / mengupdate foto alat gunung' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                nama_alat: { type: 'string' },
+                harga_sewa: { type: 'number' },
+                stok: { type: 'number' },
+                foto_alat: { type: 'string', format: 'binary' },
+            },
+        },
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFile)()),
