@@ -8,29 +8,16 @@ export declare class AuthService {
         message: string;
         access_token: string;
     }>;
-    register(data: {
-        username: string;
-        password: string;
-        role?: 'ADMIN' | 'PETUGAS' | 'PEMBELI';
-        penyewaId?: number;
-    }, currentUserRole?: string): Promise<{
-        createdAt: Date;
-        id: number;
-        penyewaId: number | null;
-        username: string;
-        password: string;
-        role: import(".prisma/client").$Enums.user_role;
-    }>;
     registerPembeliMandiri(dto: any): Promise<{
         statusCode: number;
         message: string;
         data: {
-            createdAt: Date;
             id: number;
-            penyewaId: number | null;
             username: string;
+            penyewaId: number | null;
             password: string;
             role: import(".prisma/client").$Enums.user_role;
+            createdAt: Date;
         };
     }>;
 }

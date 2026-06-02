@@ -1,27 +1,18 @@
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    register(dto: RegisterDto): Promise<{
-        createdAt: Date;
-        id: number;
-        penyewaId: number | null;
-        username: string;
-        password: string;
-        role: import(".prisma/client").$Enums.user_role;
-    }>;
     registerPembeli(dto: any): Promise<{
         statusCode: number;
         message: string;
         data: {
-            createdAt: Date;
-            id: number;
-            penyewaId: number | null;
             username: string;
             password: string;
             role: import(".prisma/client").$Enums.user_role;
+            createdAt: Date;
+            id: number;
+            penyewaId: number | null;
         };
     }>;
     login(dto: LoginDto): Promise<{

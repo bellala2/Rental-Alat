@@ -38,37 +38,6 @@ export class AuthService {
     };
   }
 
-  async register(
-    data: {
-      username: string;
-      password: string;
-      role?: 'ADMIN' | 'PETUGAS' | 'PEMBELI';
-      penyewaId?: number; 
-    }, 
-    currentUserRole?: string,
-  ) {
-    const role = data.role ?? 'PEMBELI';
-    
-    if ((role === 'ADMIN' || role === 'PETUGAS') && currentUserRole !== 'ADMIN') {
-      throw new ForbiddenException('Hanya ADMIN yang boleh membuat akun ini');
-    }
-    
-    if (role === 'PEMBELI' && !data.penyewaId) {
-      throw new BadRequestException('penyewaId wajib diisi untuk role MEMBER');
-    }
-
-    const hashed = await bcrypt.hash(data.password, 10);
-
-    return this.prisma.user.create({
-      data: {
-        username: data.username,
-        password: hashed,
-        role,
-        penyewaId: role === 'PEMBELI' ? data.penyewaId : null, 
-      },
-    });
-  }
-
   async registerPembeliMandiri(dto: any) {
     const userExist = await this.prisma.user.findUnique({
         where: { username: dto.username },
@@ -103,5 +72,5 @@ export class AuthService {
         message: 'Registrasi akun pembeli berhasil!',
         data: userBaru,
     };
-}
+  }
 }

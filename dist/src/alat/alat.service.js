@@ -18,7 +18,12 @@ let AlatService = class AlatService {
     }
     async create(dto) {
         return this.prisma.alat.create({
-            data: dto
+            data: {
+                nama_alat: dto.nama_alat,
+                harga_sewa: Number(dto.harga_sewa),
+                stok: Number(dto.stok),
+                foto_alat: dto.foto_alat,
+            },
         });
     }
     async findAll() {
@@ -41,7 +46,12 @@ let AlatService = class AlatService {
         await this.findOne(id);
         return this.prisma.alat.update({
             where: { id },
-            data: dto
+            data: {
+                nama_alat: dto.nama_alat,
+                harga_sewa: dto.harga_sewa ? Number(dto.harga_sewa) : undefined,
+                stok: dto.stok ? Number(dto.stok) : undefined,
+                foto_alat: dto.foto_alat,
+            },
         });
     }
     async remove(id) {

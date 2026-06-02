@@ -5,36 +5,40 @@ export declare class AlatService {
     private prisma;
     constructor(prisma: PrismaService);
     create(dto: CreateAlatDto): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
     findAll(): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }[]>;
     findOne(id: number): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
     update(id: number, dto: UpdateAlatDto): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
     remove(id: number): Promise<{
         message: string;

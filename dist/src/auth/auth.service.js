@@ -42,24 +42,6 @@ let AuthService = class AuthService {
             access_token: this.jwtService.sign(payload),
         };
     }
-    async register(data, currentUserRole) {
-        const role = data.role ?? 'PEMBELI';
-        if ((role === 'ADMIN' || role === 'PETUGAS') && currentUserRole !== 'ADMIN') {
-            throw new common_1.ForbiddenException('Hanya ADMIN yang boleh membuat akun ini');
-        }
-        if (role === 'PEMBELI' && !data.penyewaId) {
-            throw new common_1.BadRequestException('penyewaId wajib diisi untuk role MEMBER');
-        }
-        const hashed = await bcrypt.hash(data.password, 10);
-        return this.prisma.user.create({
-            data: {
-                username: data.username,
-                password: hashed,
-                role,
-                penyewaId: role === 'PEMBELI' ? data.penyewaId : null,
-            },
-        });
-    }
     async registerPembeliMandiri(dto) {
         const userExist = await this.prisma.user.findUnique({
             where: { username: dto.username },

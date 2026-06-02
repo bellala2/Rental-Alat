@@ -4,37 +4,41 @@ import { UpdateAlatDto } from './dto/update-alat.dto';
 export declare class AlatController {
     private readonly alatService;
     constructor(alatService: AlatService);
-    create(createAlatDto: CreateAlatDto): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
+    create(createAlatDto: CreateAlatDto, file: any): Promise<{
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
     findAll(): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }[]>;
     findOne(id: string): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
-    update(id: string, updateAlatDto: UpdateAlatDto): Promise<{
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
+    update(id: string, updateAlatDto: UpdateAlatDto, file: any): Promise<{
         nama_alat: string;
         harga_sewa: number;
         stok: number;
+        foto_alat: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
     }>;
     remove(id: string): Promise<{
         message: string;

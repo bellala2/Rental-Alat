@@ -22,11 +22,17 @@ const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 let AlatController = class AlatController {
     constructor(alatService) {
         this.alatService = alatService;
     }
-    create(createAlatDto) {
+    create(createAlatDto, file) {
+        if (file) {
+            createAlatDto.foto_alat = file.filename;
+        }
         return this.alatService.create(createAlatDto);
     }
     findAll() {
@@ -35,7 +41,12 @@ let AlatController = class AlatController {
     findOne(id) {
         return this.alatService.findOne(+id);
     }
-    update(id, updateAlatDto) {
+    update(id, updateAlatDto, file) {
+        console.log('ISI BODY:', updateAlatDto);
+        console.log('ISI FILE YANG DIUPLOAD:', file);
+        if (file) {
+            updateAlatDto.foto_alat = file.filename;
+        }
         return this.alatService.update(+id, updateAlatDto);
     }
     remove(id) {
@@ -46,20 +57,40 @@ exports.AlatController = AlatController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/alat',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `alat-${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
+            }
+            callback(null, true);
+        },
+    })),
     (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Tambah alat gunung baru beserta fotonya' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_alat_dto_1.CreateAlatDto]),
+    __metadata("design:paramtypes", [create_alat_dto_1.CreateAlatDto, Object]),
     __metadata("design:returntype", void 0)
 ], AlatController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat semua katalog alat gunung' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AlatController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat detail satu alat gunung' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -68,17 +99,36 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('foto_alat', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/alat',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `alat-${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
+            }
+            callback(null, true);
+        },
+    })),
     (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Mengubah data / mengupdate foto alat gunung' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_alat_dto_1.UpdateAlatDto]),
+    __metadata("design:paramtypes", [String, update_alat_dto_1.UpdateAlatDto, Object]),
     __metadata("design:returntype", void 0)
 ], AlatController.prototype, "update", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Menghapus alat gunung dari database' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -88,7 +138,6 @@ exports.AlatController = AlatController = __decorate([
     (0, common_1.Controller)('alat'),
     (0, swagger_1.ApiTags)('Alat'),
     (0, swagger_1.ApiBearerAuth)('bearer'),
-    (0, common_1.Controller)('alat'),
     __metadata("design:paramtypes", [alat_service_1.AlatService])
 ], AlatController);
 //# sourceMappingURL=alat.controller.js.map

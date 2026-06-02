@@ -17,14 +17,9 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
-const register_dto_1 = require("./dto/register.dto");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
-    }
-    register(dto) {
-        const roleYgLogin = 'ADMIN';
-        return this.authService.register(dto, roleYgLogin);
     }
     registerPembeli(dto) {
         return this.authService.registerPembeliMandiri(dto);
@@ -37,14 +32,6 @@ let AuthController = class AuthController {
     }
 };
 exports.AuthController = AuthController;
-__decorate([
-    (0, common_1.Post)('register'),
-    (0, swagger_1.ApiOperation)({ summary: 'Mendaftarkan user baru oleh Admin' }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
-    __metadata("design:returntype", void 0)
-], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('register-pembeli'),
     (0, swagger_1.ApiOperation)({ summary: 'Pembeli melakukan pendaftaran mandiri' }),
