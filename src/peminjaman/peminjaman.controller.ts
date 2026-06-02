@@ -9,8 +9,30 @@ import { user_role } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { UpdatePembayaranStatusDto } from './dto/updata-pembayarans-status-dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import * as streamifier from 'streamifier';
+
+cloudinary.config({
+ cloud_name: 'dxkqfjggn',
+  api_key: '744226821154857',
+  api_secret: 'MEDraFtAfC7C030URUcpAfmDlco',
+});
+
+const uploadToCloudinary = (file: any): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const cld_upload_stream = cloudinary.uploader.upload_stream(
+      { 
+        folder: 'rental_bukti_pembayaran', 
+        resource_type: 'image'
+      }, 
+      (error: any, result: any) => {
+        if (result) resolve(result);
+        else reject(error);
+      }
+    );
+    streamifier.createReadStream(file.buffer).pipe(cld_upload_stream);
+  });
+};
 
 @ApiTags('Peminjaman')
 @Controller('peminjaman')
@@ -42,14 +64,6 @@ export class PeminjamanController {
   })
   @UseInterceptors(
     FileInterceptor('bukti_pembayaran', {
-      storage: diskStorage({
-        destination: './uploads/pembayaran',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `admin-bayar-${uniqueSuffix}${ext}`);
-        },
-      }),
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
           return callback(new BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
@@ -58,18 +72,23 @@ export class PeminjamanController {
       },
     }),
   )
-  create(@Body() body: any, @UploadedFile() file: any) {
-    // Konversi paksa string form-data jadi number agar aman
+  async create(@Body() body: any, @UploadedFile() file: any) {
     const penyewaIdNumber = Number(body.penyewaId);
     const alatIdNumber = Number(body.alatId);
     const lamaSewaNumber = Number(body.lama_sewa);
-    const namaFoto = file ? file.filename : null;
+    
+    let urlFoto = null;
+
+    if (file) {
+      const cloudinaryResult = await uploadToCloudinary(file);
+      urlFoto = cloudinaryResult.secure_url; // Dapet link URL utuh (https://...)
+    }
 
     return this.service.create({
       penyewaId: penyewaIdNumber,
       alatId: alatIdNumber,
       lama_sewa: lamaSewaNumber,
-      bukti_pembayaran: namaFoto,
+      bukti_pembayaran: urlFoto, 
     });
   }
 
@@ -96,14 +115,6 @@ export class PeminjamanController {
   })
   @UseInterceptors(
     FileInterceptor('bukti_pembayaran', {
-      storage: diskStorage({
-        destination: './uploads/pembayaran',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `cust-bayar-${uniqueSuffix}${ext}`);
-        },
-      }),
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
           return callback(new BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
@@ -112,24 +123,29 @@ export class PeminjamanController {
       },
     }),
   )
-  customerCreate(@Body() body: any, @Req() req: any, @UploadedFile() file: any) {
+  async customerCreate(@Body() body: any, @Req() req: any, @UploadedFile() file: any) {
     const userId = Number(req.user.id);
     const alatIdNumber = Number(body.alatId);
     const lamaSewaNumber = Number(body.lama_sewa);
-    const namaFoto = file ? file.filename : null;
+    
+    let urlFoto = null;
 
-    // Disusun rapi sesuai data yang dibutuhkan service kelompokmu
+    if (file) {
+      const cloudinaryResult = await uploadToCloudinary(file);
+      urlFoto = cloudinaryResult.secure_url; // Dapet link URL utuh (https://...)
+    }
+
     const dtoData = {
-      penyewaId: userId, // Otomatis mengunci pakai ID user yang sedang login
+      penyewaId: userId, 
       alatId: alatIdNumber,
       lama_sewa: lamaSewaNumber,
-      bukti_pembayaran: namaFoto,
+      bukti_pembayaran: urlFoto, 
     };
 
     return this.service.customerCreate(dtoData, userId);
   }
 
-  // 3. RUTE GET DAN PUT (TIDAK BERUBAH - SUDAH BENAR)
+  // 3. RUTE GET DAN PUT (TIDAK BERUBAH)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
