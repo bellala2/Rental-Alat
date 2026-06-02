@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { user_role } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -63,33 +63,25 @@ export class AlatController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
-  @UseInterceptors(
-    FileInterceptor('foto_alat', {
-      storage: diskStorage({
-        destination: './uploads/alat',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `alat-${uniqueSuffix}${ext}`);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-          return callback(new BadRequestException('Hanya boleh upload file gambar (jpg, jpeg, png)!'), false);
-        }
-        callback(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('foto_alat', { /* ...config storage... */ }))
   @Put(':id')
-  @ApiOperation({ summary: 'Mengubah data / mengupdate foto alat gunung' })
+  @ApiConsumes('multipart/form-data') // 🌟 Wajib ditambahkan agar Swagger tahu ini untuk upload file
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        nama_alat: { type: 'string' },
+        harga_sewa: { type: 'number' },
+        stok: { type: 'number' },
+        foto_alat: { type: 'string', format: 'binary' }, // 🌟 Ini yang memicu tombol "Choose File" di Swagger
+      },
+    },
+  })
   update(
     @Param('id') id: string,
     @Body() updateAlatDto: UpdateAlatDto,
     @UploadedFile() file: any
   ) {
-    console.log('ISI BODY:', updateAlatDto);
-    console.log('ISI FILE YANG DIUPLOAD:', file);
     if (file) {
       updateAlatDto.foto_alat = file.filename;
     }
