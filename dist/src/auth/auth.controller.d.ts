@@ -1,9 +1,10 @@
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterPembeliDto } from './dto/register-pembeli.dto';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    registerPembeli(dto: any): Promise<{
+    registerPembeli(dto: RegisterPembeliDto): Promise<{
         statusCode: number;
         message: string;
         data: {

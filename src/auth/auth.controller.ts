@@ -1,8 +1,8 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger'; 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterPembeliDto } from './dto/register-pembeli.dto';
+import { RegisterPembeliDto } from './dto/register-pembeli.dto'; 
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -11,16 +11,14 @@ export class AuthController {
 
     @Post('register-pembeli')
     @ApiOperation({ summary: 'Pembeli melakukan pendaftaran mandiri' })
-    registerPembeli(@Body() dto: any) { 
+    @ApiBody({ type: RegisterPembeliDto }) 
+    registerPembeli(@Body() dto: RegisterPembeliDto) { 
         return this.authService.registerPembeliMandiri(dto);
     }
 
     @Post('login')
     @ApiOperation({ summary: 'User / Admin melakukan login' })
     login(@Body() dto: LoginDto) {
-        console.log('--- DEBUG LOGIN ---');
-        console.log('Isi DTO:', dto);
-        console.log('Username:', dto.username);
         return this.authService.login(dto.username, dto.password);
     }
 }
