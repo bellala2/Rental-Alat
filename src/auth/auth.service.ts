@@ -10,7 +10,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // 1. FUNGSI LOGIN
   async login(username: string, password: string) {
     const user = await this.prisma.user.findUnique({
       where: { username },
@@ -27,6 +26,7 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
+      id: user.id,
       username: user.username,
       role: user.role,
       penyewaId: user.penyewaId, 

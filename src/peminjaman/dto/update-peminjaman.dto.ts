@@ -5,5 +5,7 @@ export class UpdatePeminjamanDto {
     @IsEnum(peminjaman_status)
     @IsOptional()
     status!: peminjaman_status;
+
+    
 }
 

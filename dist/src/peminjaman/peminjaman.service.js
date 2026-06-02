@@ -37,19 +37,74 @@ let PeminjamanService = class PeminjamanService {
             });
             return tx.peminjaman.create({
                 data: {
-                    penyewa: {
-                        connect: { id: dto.penyewaId }
-                    },
-                    alat: {
-                        connect: { id: dto.alatId }
-                    },
+                    penyewaId: dto.penyewaId,
+                    alatId: dto.alatId,
                     lama_sewa: dto.lama_sewa,
+                    total_harga: totalHarga,
+                    bukti_pembayaran: dto.bukti_pembayaran,
+                    status_bayar: 'MENUNGGU_VERIFIKASI',
+                    tanggalPinjam: tglPinjam,
+                    tanggalKembali: tglKembali,
+                    status: 'MENUNGGU_VERIFIKASI',
+                }
+            });
+        });
+    }
+    async customerCreate(dto, userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: { penyewa: true }
+        });
+        if (!user || !user.penyewa) {
+            throw new common_1.NotFoundException('Profil data penyewa milik user ini tidak ditemukan!');
+        }
+        const alat = await this.prisma.alat.findUnique({ where: { id: Number(dto.alatId) } });
+        if (!alat)
+            throw new common_1.NotFoundException('Alat gunung tidak ditemukan!');
+        if (alat.stok <= 0) {
+            throw new common_1.BadRequestException('Maaf, stok alat ini sedang kosong!');
+        }
+        const tglPinjam = new Date();
+        const tglKembali = new Date();
+        tglKembali.setDate(tglPinjam.getDate() + Number(dto.lama_sewa));
+        const totalHarga = Number(alat.harga_sewa) * Number(dto.lama_sewa);
+        return this.prisma.$transaction(async (tx) => {
+            await tx.alat.update({
+                where: { id: Number(dto.alatId) },
+                data: { stok: alat.stok - 1 },
+            });
+            return tx.peminjaman.create({
+                data: {
+                    penyewaId: user.penyewa.id,
+                    alatId: Number(dto.alatId),
+                    lama_sewa: Number(dto.lama_sewa),
                     total_harga: totalHarga,
                     tanggalPinjam: tglPinjam,
                     tanggalKembali: tglKembali,
-                    status: 'DISEWA',
+                    bukti_pembayaran: dto.bukti_pembayaran,
+                    status: 'MENUNGGU_VERIFIKASI',
+                    status_bayar: 'MENUNGGU_VERIFIKASI'
                 }
             });
+        });
+    }
+    async updateStatus(id, statusBaru) {
+        const peminjamanExist = await this.prisma.peminjaman.findUnique({ where: { id } });
+        if (!peminjamanExist)
+            throw new common_1.NotFoundException('Data transaksi peminjaman tidak ditemukan!');
+        let peminjaman_status = peminjamanExist.status;
+        if (statusBaru === 'DISETUJUI') {
+            peminjaman_status = 'DISEWA';
+        }
+        else if (statusBaru === 'DITOLAK') {
+            peminjaman_status = 'MENUNGGU_VERIFIKASI';
+        }
+        return await this.prisma.peminjaman.update({
+            where: { id: id },
+            data: {
+                status_bayar: statusBaru,
+                status: peminjaman_status
+            }
         });
     }
     async findAll(tanggal) {
@@ -89,9 +144,10 @@ let PeminjamanService = class PeminjamanService {
         });
     }
     async findManyByUser(userId) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
         return this.prisma.peminjaman.findMany({
             where: {
-                penyewaId: userId,
+                penyewaId: user?.penyewaId || 0,
             },
             include: {
                 alat: true,

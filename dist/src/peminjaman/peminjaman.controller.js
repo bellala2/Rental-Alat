@@ -22,12 +22,17 @@ const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
+const updata_pembayarans_status_dto_1 = require("./dto/updata-pembayarans-status-dto");
 let PeminjamanController = class PeminjamanController {
     constructor(service) {
         this.service = service;
     }
     create(dto) {
         return this.service.create(dto);
+    }
+    customerCreate(dto, req) {
+        const userId = Number(req.user.id);
+        return this.service.customerCreate(dto, userId);
     }
     findAll(tanggal) {
         return this.service.findAll(tanggal);
@@ -40,6 +45,9 @@ let PeminjamanController = class PeminjamanController {
     }
     update(id, dto) {
         return this.service.update(Number(id), dto);
+    }
+    updateStatus(id, dto) {
+        return this.service.updateStatus(Number(id), dto.status_bayar);
     }
 };
 exports.PeminjamanController = PeminjamanController;
@@ -54,6 +62,17 @@ __decorate([
     __metadata("design:paramtypes", [create_peminjaman_dto_1.CreatePeminjamanDto]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('customer'),
+    (0, swagger_1.ApiOperation)({ summary: 'Customer mengajukan sewa mandiri + kirim link bukti bayar' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], PeminjamanController.prototype, "customerCreate", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
@@ -96,6 +115,18 @@ __decorate([
     __metadata("design:paramtypes", [String, update_peminjaman_dto_1.UpdatePeminjamanDto]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "update", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
+    (0, common_1.Put)(':id/status'),
+    (0, swagger_1.ApiOperation)({ summary: 'Admin / Petugas mengubah status verifikasi pembayaran' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, updata_pembayarans_status_dto_1.UpdatePembayaranStatusDto]),
+    __metadata("design:returntype", void 0)
+], PeminjamanController.prototype, "updateStatus", null);
 exports.PeminjamanController = PeminjamanController = __decorate([
     (0, swagger_1.ApiTags)('Peminjaman'),
     (0, common_1.Controller)('peminjaman'),

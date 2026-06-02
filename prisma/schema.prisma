@@ -34,7 +34,9 @@ model peminjaman {
   penyewaId                Int               
   alatId                   Int 
   lama_sewa                Int
-  total_harga              Int  
+  total_harga              Int
+  bukti_pembayaran         String?   
+  status_bayar             pembayaran_status @default(MENUNGGU_VERIFIKASI)   
   tanggalPinjam            DateTime          @default(now())
   tanggalKembali           DateTime?        
   status                   peminjaman_status @default(DISEWA)
@@ -50,7 +52,8 @@ model pengembalian {
   id             Int        @id @default(autoincrement())
   peminjamanId   Int        @unique(map: "Pengembalian_peminjamanId_key")
   tanggalKembali DateTime   @default(now())
-  totalDenda     Int        @default(0) // Tambahan biar otomatis hitung denda
+  totalDenda     Int        @default(0) 
+  foto_kembali   String?
   createdAt      DateTime   @default(now())
   peminjaman     peminjaman @relation(fields: [peminjamanId], references: [id], onDelete: Cascade, map: "Pengembalian_peminjamanId_fkey")
   @@index([peminjamanId], map: "Pengembalian_peminjamanId_idx")
@@ -73,6 +76,12 @@ enum user_role {
 }
 
 enum peminjaman_status {
+  MENUNGGU_VERIFIKASI
   DISEWA
   DIKEMBALIKAN
+}
+enum pembayaran_status {
+  MENUNGGU_VERIFIKASI
+  DISETUJUI
+  DITOLAK
 }

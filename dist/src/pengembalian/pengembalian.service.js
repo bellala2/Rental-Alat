@@ -17,46 +17,35 @@ let PengembalianService = class PengembalianService {
         this.prisma = prisma;
     }
     async create(dto) {
-        const pinjaman = await this.prisma.peminjaman.findUnique({
-            where: { id: dto.peminjamanId },
-            include: { pengembalian: true }
+        const peminjamanExist = await this.prisma.peminjaman.findUnique({
+            where: { id: dto.peminjamanId }
         });
-        if (!pinjaman)
+        if (!peminjamanExist) {
             throw new common_1.NotFoundException('Data peminjaman tidak ditemukan!');
-        if (pinjaman.status === 'DIKEMBALIKAN' || pinjaman.pengembalian) {
-            throw new common_1.BadRequestException('Alat ini sudah dikembalikan sebelumnya!');
         }
-        const tanggalHariIni = new Date();
-        const deadlineKembali = new Date(pinjaman.tanggalKembali);
-        let totalDenda = 0;
-        const TARIF_DENDA = 5000;
-        if (tanggalHariIni > deadlineKembali) {
-            const selisihWaktu = tanggalHariIni.getTime() - deadlineKembali.getTime();
-            const jumlahHariTelat = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
-            if (jumlahHariTelat > 0) {
-                totalDenda = jumlahHariTelat * TARIF_DENDA;
-            }
+        if (peminjamanExist.status === 'DIKEMBALIKAN') {
+            throw new common_1.BadRequestException('Alat pada transaksi ini sudah berstatus dikembalikan!');
         }
         return this.prisma.$transaction(async (tx) => {
-            const alat = await tx.alat.findUnique({ where: { id: pinjaman.alatId } });
-            if (!alat)
-                throw new common_1.NotFoundException('Data alat tidak ditemukan!');
+            const dataPengembalian = await tx.pengembalian.create({
+                data: {
+                    peminjamanId: dto.peminjamanId,
+                    totalDenda: dto.totalDenda || 0,
+                    foto_kembali: dto.foto_kembali || null,
+                    tanggalKembali: new Date(),
+                }
+            });
             await tx.alat.update({
-                where: { id: pinjaman.alatId },
-                data: { stok: alat.stok + 1 },
+                where: { id: peminjamanExist.alatId },
+                data: { stok: { increment: 1 } }
             });
             await tx.peminjaman.update({
                 where: { id: dto.peminjamanId },
                 data: {
-                    status: 'DIKEMBALIKAN',
-                },
+                    status: 'DIKEMBALIKAN'
+                }
             });
-            return tx.pengembalian.create({
-                data: {
-                    peminjamanId: dto.peminjamanId,
-                    totalDenda: totalDenda,
-                },
-            });
+            return dataPengembalian;
         });
     }
     async findAll() {

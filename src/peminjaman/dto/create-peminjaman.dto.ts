@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePeminjamanDto {
@@ -16,4 +16,9 @@ export class CreatePeminjamanDto {
   @IsNumber()
   @IsNotEmpty()
   lama_sewa: number;
+
+  @ApiProperty({ example: 'https://link-bukti.com/transfer.jpg', description: 'Link URL bukti pembayaran', required: false })
+  @IsString()
+  @IsOptional()
+  bukti_pembayaran?: string;
 }

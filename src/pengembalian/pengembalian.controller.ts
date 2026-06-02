@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, UseGuards, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { PengembalianService } from './pengembalian.service';
 import { CreatePengembalianDto } from './dto/create-pengembalian.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { user_role } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @ApiTags('Pengembalian')
 @Controller('pengembalian')
@@ -16,9 +19,54 @@ export class PengembalianController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
   @Post()
-  @ApiOperation({ summary: 'Proses pengembalian alat baru (ADMIN & PETUGAS)' })
-  create(@Body() createPengembalianDto: CreatePengembalianDto) {
-    return this.pengembalianService.create(createPengembalianDto);
+  @ApiOperation({ summary: 'Menambahkan verifikasi pengembalian barang + foto (ADMIN & PETUGAS)' })
+  @ApiConsumes('multipart/form-data') 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        peminjamanId: { type: 'number', description: 'ID dari transaksi peminjaman' },
+        totalDenda: { type: 'number', description: 'Total denda jika terlambat (opsional)', default: 0 },
+        foto_kembali: {
+          type: 'string',
+          format: 'binary',
+          description: 'Foto bukti kondisi alat saat dikembalikan',
+        },
+      },
+      required: ['peminjamanId', 'foto_kembali'],
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('foto_kembali', {
+      storage: diskStorage({
+        destination: './uploads/pengembalian', 
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `kembali-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+          return callback(new BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async create(
+    @Body() body: { peminjamanId: string; totalDenda?: string },
+    @UploadedFile() file: any, 
+  ) {
+    const peminjamanIdNumber = Number(body.peminjamanId);
+    const totalDendaNumber = body.totalDenda ? Number(body.totalDenda) : 0;
+    const namaFoto = file ? file.filename : null;
+
+    return this.pengembalianService.create({
+      peminjamanId: peminjamanIdNumber,
+      totalDenda: totalDendaNumber,
+      foto_kembali: namaFoto,
+    });
   }
 
   @ApiBearerAuth()

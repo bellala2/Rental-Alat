@@ -5,23 +5,23 @@ export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
     register(dto: RegisterDto): Promise<{
-        username: string;
-        password: string;
-        role: import(".prisma/client").$Enums.user_role;
         createdAt: Date;
         id: number;
         penyewaId: number | null;
+        username: string;
+        password: string;
+        role: import(".prisma/client").$Enums.user_role;
     }>;
     registerPembeli(dto: any): Promise<{
         statusCode: number;
         message: string;
         data: {
-            username: string;
-            password: string;
-            role: import(".prisma/client").$Enums.user_role;
             createdAt: Date;
             id: number;
             penyewaId: number | null;
+            username: string;
+            password: string;
+            role: import(".prisma/client").$Enums.user_role;
         };
     }>;
     login(dto: LoginDto): Promise<{

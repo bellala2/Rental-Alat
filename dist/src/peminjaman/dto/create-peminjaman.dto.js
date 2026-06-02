@@ -33,4 +33,10 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreatePeminjamanDto.prototype, "lama_sewa", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://link-bukti.com/transfer.jpg', description: 'Link URL bukti pembayaran', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreatePeminjamanDto.prototype, "bukti_pembayaran", void 0);
 //# sourceMappingURL=create-peminjaman.dto.js.map

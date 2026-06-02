@@ -1,85 +1,94 @@
 import { PengembalianService } from './pengembalian.service';
-import { CreatePengembalianDto } from './dto/create-pengembalian.dto';
 export declare class PengembalianController {
     private readonly pengembalianService;
     constructor(pengembalianService: PengembalianService);
-    create(createPengembalianDto: CreatePengembalianDto): Promise<{
+    create(body: {
+        peminjamanId: string;
+        totalDenda?: string;
+    }, file: any): Promise<{
+        createdAt: Date;
         id: number;
-        peminjamanId: number;
         tanggalKembali: Date;
         totalDenda: number;
-        createdAt: Date;
+        foto_kembali: string | null;
+        peminjamanId: number;
     }>;
     findAll(): Promise<({
         peminjaman: {
             penyewa: {
-                name: string;
-                id: number;
-                createdAt: Date;
                 no_hp: string;
+                name: string;
                 email: string | null;
                 alamat: string;
-                updatedAt: Date;
-            };
-            alat: {
-                id: number;
                 createdAt: Date;
                 updatedAt: Date;
+                id: number;
+            };
+            alat: {
+                createdAt: Date;
+                updatedAt: Date;
+                id: number;
                 nama_alat: string;
                 harga_sewa: number;
                 stok: number;
             };
         } & {
             id: number;
-            tanggalKembali: Date | null;
+            status: import(".prisma/client").$Enums.peminjaman_status;
             penyewaId: number;
             alatId: number;
             lama_sewa: number;
             total_harga: number;
+            bukti_pembayaran: string | null;
+            status_bayar: import(".prisma/client").$Enums.pembayaran_status;
             tanggalPinjam: Date;
-            status: import(".prisma/client").$Enums.peminjaman_status;
+            tanggalKembali: Date | null;
         };
     } & {
+        createdAt: Date;
         id: number;
-        peminjamanId: number;
         tanggalKembali: Date;
         totalDenda: number;
-        createdAt: Date;
+        foto_kembali: string | null;
+        peminjamanId: number;
     })[]>;
     findOne(id: string): Promise<{
         peminjaman: {
             penyewa: {
-                name: string;
-                id: number;
-                createdAt: Date;
                 no_hp: string;
+                name: string;
                 email: string | null;
                 alamat: string;
-                updatedAt: Date;
-            };
-            alat: {
-                id: number;
                 createdAt: Date;
                 updatedAt: Date;
+                id: number;
+            };
+            alat: {
+                createdAt: Date;
+                updatedAt: Date;
+                id: number;
                 nama_alat: string;
                 harga_sewa: number;
                 stok: number;
             };
         } & {
             id: number;
-            tanggalKembali: Date | null;
+            status: import(".prisma/client").$Enums.peminjaman_status;
             penyewaId: number;
             alatId: number;
             lama_sewa: number;
             total_harga: number;
+            bukti_pembayaran: string | null;
+            status_bayar: import(".prisma/client").$Enums.pembayaran_status;
             tanggalPinjam: Date;
-            status: import(".prisma/client").$Enums.peminjaman_status;
+            tanggalKembali: Date | null;
         };
     } & {
+        createdAt: Date;
         id: number;
-        peminjamanId: number;
         tanggalKembali: Date;
         totalDenda: number;
-        createdAt: Date;
+        foto_kembali: string | null;
+        peminjamanId: number;
     }>;
 }
