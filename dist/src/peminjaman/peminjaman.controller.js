@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PeminjamanController = void 0;
 const common_1 = require("@nestjs/common");
 const peminjaman_service_1 = require("./peminjaman.service");
+const create_peminjaman_dto_1 = require("./dto/create-peminjaman.dto");
 const update_peminjaman_dto_1 = require("./dto/update-peminjaman.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
@@ -84,14 +85,18 @@ let PeminjamanController = class PeminjamanController {
     findAll(tanggal) {
         return this.service.findAll(tanggal);
     }
-    findOne(id) {
-        return this.service.findOne(Number(id));
-    }
     update(id, dto) {
         return this.service.update(Number(id), dto);
     }
     updateStatus(id, dto) {
         return this.service.updateStatus(Number(id), dto.status_bayar);
+    }
+    findOne(id) {
+        const idNumber = Number(id);
+        if (isNaN(idNumber)) {
+            throw new common_1.BadRequestException('ID yang dimasukkan harus berupa angka valid!');
+        }
+        return this.service.findOne(idNumber);
     }
 };
 exports.PeminjamanController = PeminjamanController;
@@ -129,7 +134,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [create_peminjaman_dto_1.CreatePeminjamanDto, Object]),
     __metadata("design:returntype", Promise)
 ], PeminjamanController.prototype, "create", null);
 __decorate([
@@ -165,7 +170,7 @@ __decorate([
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [create_peminjaman_dto_1.CreatePeminjamanDto, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PeminjamanController.prototype, "customerCreate", null);
 __decorate([
@@ -180,14 +185,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Lihat detail peminjaman berdasarkan ID' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PeminjamanController.prototype, "findOne", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
@@ -212,6 +209,14 @@ __decorate([
     __metadata("design:paramtypes", [String, updata_pembayarans_status_dto_1.UpdatePembayaranStatusDto]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "updateStatus", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lihat detail peminjaman berdasarkan ID' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PeminjamanController.prototype, "findOne", null);
 exports.PeminjamanController = PeminjamanController = __decorate([
     (0, swagger_1.ApiTags)('Peminjaman'),
     (0, common_1.Controller)('peminjaman'),

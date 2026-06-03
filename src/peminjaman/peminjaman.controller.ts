@@ -13,7 +13,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
 cloudinary.config({
- cloud_name: 'dxkqfjggn',
+  cloud_name: 'dxkqfjggn',
   api_key: '744226821154857',
   api_secret: 'MEDraFtAfC7C030URUcpAfmDlco',
 });
@@ -39,7 +39,6 @@ const uploadToCloudinary = (file: any): Promise<any> => {
 export class PeminjamanController {
   constructor(private readonly service: PeminjamanService) { }
 
-  // 🌟 1. RUTE POST UNTUK ADMIN/PETUGAS INPUT MANUAL DI KASIR
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
@@ -72,7 +71,7 @@ export class PeminjamanController {
       },
     }),
   )
-  async create(@Body() body: any, @UploadedFile() file: any) {
+  async create(@Body() body: CreatePeminjamanDto, @UploadedFile() file: any) {
     const penyewaIdNumber = Number(body.penyewaId);
     const alatIdNumber = Number(body.alatId);
     const lamaSewaNumber = Number(body.lama_sewa);
@@ -81,7 +80,7 @@ export class PeminjamanController {
 
     if (file) {
       const cloudinaryResult = await uploadToCloudinary(file);
-      urlFoto = cloudinaryResult.secure_url; // Dapet link URL utuh (https://...)
+      urlFoto = cloudinaryResult.secure_url;
     }
 
     return this.service.create({
@@ -92,7 +91,6 @@ export class PeminjamanController {
     });
   }
 
-  // 🌟 2. RUTE POST UNTUK CUSTOMER SEWA MANDIRI ONLINE
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard) 
   @Post('customer')
@@ -123,7 +121,7 @@ export class PeminjamanController {
       },
     }),
   )
-  async customerCreate(@Body() body: any, @Req() req: any, @UploadedFile() file: any) {
+  async customerCreate(@Body() body: CreatePeminjamanDto, @Req() req: any, @UploadedFile() file: any) {
     const userId = Number(req.user.id);
     const alatIdNumber = Number(body.alatId);
     const lamaSewaNumber = Number(body.lama_sewa);
@@ -132,7 +130,7 @@ export class PeminjamanController {
 
     if (file) {
       const cloudinaryResult = await uploadToCloudinary(file);
-      urlFoto = cloudinaryResult.secure_url; // Dapet link URL utuh (https://...)
+      urlFoto = cloudinaryResult.secure_url;
     }
 
     const dtoData = {
@@ -145,7 +143,6 @@ export class PeminjamanController {
     return this.service.customerCreate(dtoData, userId);
   }
 
-  // 3. RUTE GET DAN PUT (TIDAK BERUBAH)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
@@ -154,12 +151,6 @@ export class PeminjamanController {
   @ApiQuery({ name: 'tanggal', required: false, description: 'Format: YYYY-MM-DD. Kosongkan untuk ambil semua data.' })
   findAll(@Query('tanggal') tanggal?: string) {
     return this.service.findAll(tanggal);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Lihat detail peminjaman berdasarkan ID' })
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(Number(id));
   }
 
   @ApiBearerAuth()
@@ -181,5 +172,17 @@ export class PeminjamanController {
     @Body() dto: UpdatePembayaranStatusDto
   ) {
     return this.service.updateStatus(Number(id), dto.status_bayar); 
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Lihat detail peminjaman berdasarkan ID' })
+  findOne(@Param('id') id: string) {
+    const idNumber = Number(id);
+    
+    if (isNaN(idNumber)) {
+      throw new BadRequestException('ID yang dimasukkan harus berupa angka valid!');
+    }
+    
+    return this.service.findOne(idNumber);
   }
 }

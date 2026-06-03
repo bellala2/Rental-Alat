@@ -1,10 +1,11 @@
 import { PeminjamanService } from './peminjaman.service';
+import { CreatePeminjamanDto } from './dto/create-peminjaman.dto';
 import { UpdatePeminjamanDto } from './dto/update-peminjaman.dto';
 import { UpdatePembayaranStatusDto } from './dto/updata-pembayarans-status-dto';
 export declare class PeminjamanController {
     private readonly service;
     constructor(service: PeminjamanService);
-    create(body: any, file: any): Promise<{
+    create(body: CreatePeminjamanDto, file: any): Promise<{
         id: number;
         penyewaId: number;
         alatId: number;
@@ -16,7 +17,7 @@ export declare class PeminjamanController {
         tanggalKembali: Date | null;
         status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
-    customerCreate(body: any, req: any, file: any): Promise<{
+    customerCreate(body: CreatePeminjamanDto, req: any, file: any): Promise<{
         id: number;
         penyewaId: number;
         alatId: number;
@@ -59,6 +60,30 @@ export declare class PeminjamanController {
         tanggalKembali: Date | null;
         status: import(".prisma/client").$Enums.peminjaman_status;
     })[]>;
+    update(id: string, dto: UpdatePeminjamanDto): Promise<{
+        id: number;
+        penyewaId: number;
+        alatId: number;
+        lama_sewa: number;
+        total_harga: number;
+        bukti_pembayaran: string | null;
+        status_bayar: import(".prisma/client").$Enums.pembayaran_status;
+        tanggalPinjam: Date;
+        tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
+    }>;
+    updateStatus(id: string, dto: UpdatePembayaranStatusDto): Promise<{
+        id: number;
+        penyewaId: number;
+        alatId: number;
+        lama_sewa: number;
+        total_harga: number;
+        bukti_pembayaran: string | null;
+        status_bayar: import(".prisma/client").$Enums.pembayaran_status;
+        tanggalPinjam: Date;
+        tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
+    }>;
     findOne(id: string): Promise<{
         penyewa: {
             name: string;
@@ -79,30 +104,6 @@ export declare class PeminjamanController {
             updatedAt: Date;
         };
     } & {
-        id: number;
-        penyewaId: number;
-        alatId: number;
-        lama_sewa: number;
-        total_harga: number;
-        bukti_pembayaran: string | null;
-        status_bayar: import(".prisma/client").$Enums.pembayaran_status;
-        tanggalPinjam: Date;
-        tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
-    }>;
-    update(id: string, dto: UpdatePeminjamanDto): Promise<{
-        id: number;
-        penyewaId: number;
-        alatId: number;
-        lama_sewa: number;
-        total_harga: number;
-        bukti_pembayaran: string | null;
-        status_bayar: import(".prisma/client").$Enums.pembayaran_status;
-        tanggalPinjam: Date;
-        tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
-    }>;
-    updateStatus(id: string, dto: UpdatePembayaranStatusDto): Promise<{
         id: number;
         penyewaId: number;
         alatId: number;
