@@ -39,13 +39,12 @@ export class PengembalianService {
         dendaFinal = selisihHari * TARIF_DENDA_PER_HARI;
       }
     }
-    // ───────────────────────────────────────────
 
     return this.prisma.$transaction(async (tx) => {
       const dataPengembalian = await tx.pengembalian.create({
         data: {
           peminjamanId: Number(dto.peminjamanId),
-          totalDenda: dendaFinal, // 🌟 Menggunakan hasil dendaFinal (bisa manual / otomatis)
+          totalDenda: dendaFinal, 
           foto_kembali: dto.foto_kembali || null, 
           tanggalKembali: new Date(),
         }
