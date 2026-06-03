@@ -12,25 +12,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePeminjamanDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 class CreatePeminjamanDto {
 }
 exports.CreatePeminjamanDto = CreatePeminjamanDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 1, description: 'ID dari Penyewa' }),
+    (0, swagger_1.ApiProperty)({ example: 1, description: 'ID dari Penyewa', required: false }),
     (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], CreatePeminjamanDto.prototype, "penyewaId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 1, description: 'ID dari Alat yang disewa' }),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], CreatePeminjamanDto.prototype, "alatId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 2, description: 'Lama sewa dalam hitungan hari' }),
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], CreatePeminjamanDto.prototype, "lama_sewa", void 0);
 __decorate([

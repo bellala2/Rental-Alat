@@ -1,5 +1,5 @@
 export declare class CreatePeminjamanDto {
-    penyewaId: number;
+    penyewaId?: number;
     alatId: number;
     lama_sewa: number;
     bukti_pembayaran?: string;

@@ -7,7 +7,6 @@ export declare class PeminjamanService {
     constructor(prisma: PrismaService);
     create(dto: CreatePeminjamanDto): Promise<{
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -16,10 +15,10 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     customerCreate(dto: any, userId: number): Promise<{
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -28,10 +27,10 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     updateStatus(id: number, statusBaru: pembayaran_status): Promise<{
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -40,29 +39,29 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     findAll(tanggal?: string): Promise<({
         penyewa: {
-            no_hp: string;
             name: string;
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            no_hp: string;
             email: string | null;
             alamat: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
         };
         alat: {
-            createdAt: Date;
-            updatedAt: Date;
             id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
             foto_alat: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
     } & {
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -71,29 +70,29 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     })[]>;
     findOne(id: number): Promise<{
         penyewa: {
-            no_hp: string;
             name: string;
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            no_hp: string;
             email: string | null;
             alamat: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
         };
         alat: {
-            createdAt: Date;
-            updatedAt: Date;
             id: number;
             nama_alat: string;
             harga_sewa: number;
             stok: number;
             foto_alat: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
     } & {
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -102,10 +101,10 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
     update(id: number, dto: UpdatePeminjamanDto): Promise<{
         id: number;
-        status: import(".prisma/client").$Enums.peminjaman_status;
         penyewaId: number;
         alatId: number;
         lama_sewa: number;
@@ -114,5 +113,6 @@ export declare class PeminjamanService {
         status_bayar: import(".prisma/client").$Enums.pembayaran_status;
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
+        status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
 }
