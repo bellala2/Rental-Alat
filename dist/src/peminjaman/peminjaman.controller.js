@@ -23,34 +23,61 @@ const client_1 = require("@prisma/client");
 const swagger_1 = require("@nestjs/swagger");
 const updata_pembayarans_status_dto_1 = require("./dto/updata-pembayarans-status-dto");
 const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
-const path_1 = require("path");
+const cloudinary_1 = require("cloudinary");
+const streamifier = require("streamifier");
+cloudinary_1.v2.config({
+    cloud_name: 'dxkqfjggn',
+    api_key: '744226821154857',
+    api_secret: 'MEDraFtAfC7C030URUcpAfmDlco',
+});
+const uploadToCloudinary = (file) => {
+    return new Promise((resolve, reject) => {
+        const cld_upload_stream = cloudinary_1.v2.uploader.upload_stream({
+            folder: 'rental_bukti_pembayaran',
+            resource_type: 'image'
+        }, (error, result) => {
+            if (result)
+                resolve(result);
+            else
+                reject(error);
+        });
+        streamifier.createReadStream(file.buffer).pipe(cld_upload_stream);
+    });
+};
 let PeminjamanController = class PeminjamanController {
     constructor(service) {
         this.service = service;
     }
-    create(body, file) {
+    async create(body, file) {
         const penyewaIdNumber = Number(body.penyewaId);
         const alatIdNumber = Number(body.alatId);
         const lamaSewaNumber = Number(body.lama_sewa);
-        const namaFoto = file ? file.filename : null;
+        let urlFoto = null;
+        if (file) {
+            const cloudinaryResult = await uploadToCloudinary(file);
+            urlFoto = cloudinaryResult.secure_url;
+        }
         return this.service.create({
             penyewaId: penyewaIdNumber,
             alatId: alatIdNumber,
             lama_sewa: lamaSewaNumber,
-            bukti_pembayaran: namaFoto,
+            bukti_pembayaran: urlFoto,
         });
     }
-    customerCreate(body, req, file) {
+    async customerCreate(body, req, file) {
         const userId = Number(req.user.id);
         const alatIdNumber = Number(body.alatId);
         const lamaSewaNumber = Number(body.lama_sewa);
-        const namaFoto = file ? file.filename : null;
+        let urlFoto = null;
+        if (file) {
+            const cloudinaryResult = await uploadToCloudinary(file);
+            urlFoto = cloudinaryResult.secure_url;
+        }
         const dtoData = {
             penyewaId: userId,
             alatId: alatIdNumber,
             lama_sewa: lamaSewaNumber,
-            bukti_pembayaran: namaFoto,
+            bukti_pembayaran: urlFoto,
         };
         return this.service.customerCreate(dtoData, userId);
     }
@@ -92,14 +119,6 @@ __decorate([
         },
     }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('bukti_pembayaran', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/pembayaran',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = (0, path_1.extname)(file.originalname);
-                callback(null, `admin-bayar-${uniqueSuffix}${ext}`);
-            },
-        }),
         fileFilter: (req, file, callback) => {
             if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
                 return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
@@ -111,7 +130,7 @@ __decorate([
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PeminjamanController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
@@ -135,14 +154,6 @@ __decorate([
         },
     }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('bukti_pembayaran', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/pembayaran',
-            filename: (req, file, callback) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = (0, path_1.extname)(file.originalname);
-                callback(null, `cust-bayar-${uniqueSuffix}${ext}`);
-            },
-        }),
         fileFilter: (req, file, callback) => {
             if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
                 return callback(new common_1.BadRequestException('Hanya boleh upload file gambar (jpg/jpeg/png)!'), false);
@@ -155,7 +166,7 @@ __decorate([
     __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PeminjamanController.prototype, "customerCreate", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
