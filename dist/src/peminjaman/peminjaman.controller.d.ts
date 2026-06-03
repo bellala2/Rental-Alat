@@ -29,37 +29,6 @@ export declare class PeminjamanController {
         tanggalKembali: Date | null;
         status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
-    findAll(tanggal?: string): Promise<({
-        penyewa: {
-            name: string;
-            id: number;
-            createdAt: Date;
-            updatedAt: Date;
-            no_hp: string;
-            email: string | null;
-            alamat: string;
-        };
-        alat: {
-            id: number;
-            nama_alat: string;
-            harga_sewa: number;
-            stok: number;
-            foto_alat: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-        };
-    } & {
-        id: number;
-        penyewaId: number;
-        alatId: number;
-        lama_sewa: number;
-        total_harga: number;
-        bukti_pembayaran: string | null;
-        status_bayar: import(".prisma/client").$Enums.pembayaran_status;
-        tanggalPinjam: Date;
-        tanggalKembali: Date | null;
-        status: import(".prisma/client").$Enums.peminjaman_status;
-    })[]>;
     update(id: string, dto: UpdatePeminjamanDto): Promise<{
         id: number;
         penyewaId: number;
@@ -114,5 +83,8 @@ export declare class PeminjamanController {
         tanggalPinjam: Date;
         tanggalKembali: Date | null;
         status: import(".prisma/client").$Enums.peminjaman_status;
+    }>;
+    remove(id: string): Promise<{
+        message: string;
     }>;
 }

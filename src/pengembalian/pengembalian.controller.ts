@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Param, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param, UseInterceptors, UploadedFile, BadRequestException, Put, Delete } from '@nestjs/common';
 import { PengembalianService } from './pengembalian.service';
 import { CreatePengembalianDto } from './dto/create-pengembalian.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -56,16 +56,13 @@ export class PengembalianController {
   )
   
   async create(
-    // 🌟 Di sini kita tangkap sebagai string/any dulu dari form-data biar lolos Class-Validator
     @Body() body: any, 
     @UploadedFile() file: any, 
   ) {
-    // 🌟 Di sini kita konversi paksa menjadi Number secara aman sebelum dilempar ke service
     const peminjamanIdNumber = Number(body.peminjamanId);
     const totalDendaNumber = body.totalDenda ? Number(body.totalDenda) : 0;
     const namaFoto = file ? file.filename : null;
 
-    // Pastikan data yang dikirim ke service sudah berupa angka murni (Number)
     return this.pengembalianService.create({
       peminjamanId: peminjamanIdNumber,
       totalDenda: totalDendaNumber,
@@ -86,5 +83,28 @@ export class PengembalianController {
   @ApiOperation({ summary: 'Melihat detail satu data pengembalian' })
   findOne(@Param('id') id: string) {
     return this.pengembalianService.findOne(Number(id));
+  }
+  
+@ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(user_role.ADMIN) 
+  @Put(':id')
+  @ApiOperation({ summary: 'Admin mengubah data riwayat pengembalian (Formalitas CRUD)' })
+  async update(@Param('id') id: string, @Body() body: any) {
+    const dataUpdate: any = {};
+    
+    if (body.peminjamanId) dataUpdate.peminjamanId = Number(body.peminjamanId);
+    if (body.totalDenda !== undefined) dataUpdate.totalDenda = Number(body.totalDenda);
+    
+    return this.pengembalianService.update(Number(id), dataUpdate);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(user_role.ADMIN) 
+  @Delete(':id')
+  @ApiOperation({ summary: 'Admin menghapus data riwayat pengembalian (Formalitas CRUD)' })
+  async remove(@Param('id') id: string) {
+    return this.pengembalianService.remove(Number(id));
   }
 }

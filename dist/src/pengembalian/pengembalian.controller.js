@@ -43,6 +43,17 @@ let PengembalianController = class PengembalianController {
     findOne(id) {
         return this.pengembalianService.findOne(Number(id));
     }
+    async update(id, body) {
+        const dataUpdate = {};
+        if (body.peminjamanId)
+            dataUpdate.peminjamanId = Number(body.peminjamanId);
+        if (body.totalDenda !== undefined)
+            dataUpdate.totalDenda = Number(body.totalDenda);
+        return this.pengembalianService.update(Number(id), dataUpdate);
+    }
+    async remove(id) {
+        return this.pengembalianService.remove(Number(id));
+    }
 };
 exports.PengembalianController = PengembalianController;
 __decorate([
@@ -107,6 +118,29 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PengembalianController.prototype, "findOne", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN),
+    (0, common_1.Put)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Admin mengubah data riwayat pengembalian (Formalitas CRUD)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PengembalianController.prototype, "update", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN),
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Admin menghapus data riwayat pengembalian (Formalitas CRUD)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PengembalianController.prototype, "remove", null);
 exports.PengembalianController = PengembalianController = __decorate([
     (0, swagger_1.ApiTags)('Pengembalian'),
     (0, common_1.Controller)('pengembalian'),

@@ -82,9 +82,6 @@ let PeminjamanController = class PeminjamanController {
         };
         return this.service.customerCreate(dtoData, userId);
     }
-    findAll(tanggal) {
-        return this.service.findAll(tanggal);
-    }
     update(id, dto) {
         return this.service.update(Number(id), dto);
     }
@@ -97,6 +94,9 @@ let PeminjamanController = class PeminjamanController {
             throw new common_1.BadRequestException('ID yang dimasukkan harus berupa angka valid!');
         }
         return this.service.findOne(idNumber);
+    }
+    remove(id) {
+        return this.service.remove(Number(id));
     }
 };
 exports.PeminjamanController = PeminjamanController;
@@ -177,18 +177,6 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Lihat semua data peminjaman atau filter per tanggal' }),
-    (0, swagger_1.ApiQuery)({ name: 'tanggal', required: false, description: 'Format: YYYY-MM-DD. Kosongkan untuk ambil semua data.' }),
-    __param(0, (0, common_1.Query)('tanggal')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PeminjamanController.prototype, "findAll", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN, client_1.user_role.PETUGAS),
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update data peminjaman' }),
     __param(0, (0, common_1.Param)('id')),
@@ -210,6 +198,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "updateStatus", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Lihat detail peminjaman berdasarkan ID' }),
     __param(0, (0, common_1.Param)('id')),
@@ -217,6 +206,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PeminjamanController.prototype, "findOne", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(client_1.user_role.ADMIN),
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Admin menghapus data transaksi peminjaman' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PeminjamanController.prototype, "remove", null);
 exports.PeminjamanController = PeminjamanController = __decorate([
     (0, swagger_1.ApiTags)('Peminjaman'),
     (0, common_1.Controller)('peminjaman'),

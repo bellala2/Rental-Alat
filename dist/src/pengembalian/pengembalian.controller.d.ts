@@ -3,36 +3,36 @@ export declare class PengembalianController {
     private readonly pengembalianService;
     constructor(pengembalianService: PengembalianService);
     create(body: any, file: any): Promise<{
-        createdAt: Date;
-        id: number;
+        foto_kembali: string | null;
         tanggalKembali: Date;
         totalDenda: number;
-        foto_kembali: string | null;
+        createdAt: Date;
+        id: number;
         peminjamanId: number;
     }>;
     findAll(): Promise<({
         peminjaman: {
             penyewa: {
-                no_hp: string;
+                createdAt: Date;
+                id: number;
                 name: string;
+                no_hp: string;
                 email: string | null;
                 alamat: string;
-                createdAt: Date;
                 updatedAt: Date;
-                id: number;
             };
             alat: {
                 createdAt: Date;
-                updatedAt: Date;
                 id: number;
+                updatedAt: Date;
                 nama_alat: string;
                 harga_sewa: number;
                 stok: number;
                 foto_alat: string | null;
             };
         } & {
+            tanggalKembali: Date | null;
             id: number;
-            status: import(".prisma/client").$Enums.peminjaman_status;
             penyewaId: number;
             alatId: number;
             lama_sewa: number;
@@ -40,39 +40,39 @@ export declare class PengembalianController {
             bukti_pembayaran: string | null;
             status_bayar: import(".prisma/client").$Enums.pembayaran_status;
             tanggalPinjam: Date;
-            tanggalKembali: Date | null;
+            status: import(".prisma/client").$Enums.peminjaman_status;
         };
     } & {
-        createdAt: Date;
-        id: number;
+        foto_kembali: string | null;
         tanggalKembali: Date;
         totalDenda: number;
-        foto_kembali: string | null;
+        createdAt: Date;
+        id: number;
         peminjamanId: number;
     })[]>;
     findOne(id: string): Promise<{
         peminjaman: {
             penyewa: {
-                no_hp: string;
+                createdAt: Date;
+                id: number;
                 name: string;
+                no_hp: string;
                 email: string | null;
                 alamat: string;
-                createdAt: Date;
                 updatedAt: Date;
-                id: number;
             };
             alat: {
                 createdAt: Date;
-                updatedAt: Date;
                 id: number;
+                updatedAt: Date;
                 nama_alat: string;
                 harga_sewa: number;
                 stok: number;
                 foto_alat: string | null;
             };
         } & {
+            tanggalKembali: Date | null;
             id: number;
-            status: import(".prisma/client").$Enums.peminjaman_status;
             penyewaId: number;
             alatId: number;
             lama_sewa: number;
@@ -80,14 +80,30 @@ export declare class PengembalianController {
             bukti_pembayaran: string | null;
             status_bayar: import(".prisma/client").$Enums.pembayaran_status;
             tanggalPinjam: Date;
-            tanggalKembali: Date | null;
+            status: import(".prisma/client").$Enums.peminjaman_status;
         };
     } & {
-        createdAt: Date;
-        id: number;
+        foto_kembali: string | null;
         tanggalKembali: Date;
         totalDenda: number;
+        createdAt: Date;
+        id: number;
+        peminjamanId: number;
+    }>;
+    update(id: string, body: any): Promise<{
         foto_kembali: string | null;
+        tanggalKembali: Date;
+        totalDenda: number;
+        createdAt: Date;
+        id: number;
+        peminjamanId: number;
+    }>;
+    remove(id: string): Promise<{
+        foto_kembali: string | null;
+        tanggalKembali: Date;
+        totalDenda: number;
+        createdAt: Date;
+        id: number;
         peminjamanId: number;
     }>;
 }

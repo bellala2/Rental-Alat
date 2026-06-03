@@ -143,6 +143,18 @@ let PeminjamanService = class PeminjamanService {
             data: dto,
         });
     }
+    async remove(id) {
+        const peminjaman = await this.prisma.peminjaman.findUnique({
+            where: { id },
+        });
+        if (!peminjaman) {
+            throw new common_1.NotFoundException(`Data peminjaman dengan ID ${id} tidak ditemukan`);
+        }
+        await this.prisma.peminjaman.delete({
+            where: { id },
+        });
+        return { message: `Data peminjaman dengan ID ${id} berhasil dihapus dari database` };
+    }
 };
 exports.PeminjamanService = PeminjamanService;
 exports.PeminjamanService = PeminjamanService = __decorate([

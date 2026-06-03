@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Query, UseGuards, Req, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query, UseGuards, Req, UseInterceptors, UploadedFile, BadRequestException, Delete } from '@nestjs/common';
 import { PeminjamanService } from './peminjaman.service';
 import { CreatePeminjamanDto } from './dto/create-peminjaman.dto';
 import { UpdatePeminjamanDto } from './dto/update-peminjaman.dto';
@@ -143,15 +143,7 @@ export class PeminjamanController {
     return this.service.customerCreate(dtoData, userId);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(user_role.ADMIN, user_role.PETUGAS)
-  @Get()
-  @ApiOperation({ summary: 'Lihat semua data peminjaman atau filter per tanggal' })
-  @ApiQuery({ name: 'tanggal', required: false, description: 'Format: YYYY-MM-DD. Kosongkan untuk ambil semua data.' })
-  findAll(@Query('tanggal') tanggal?: string) {
-    return this.service.findAll(tanggal);
-  }
+  
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -174,6 +166,7 @@ export class PeminjamanController {
     return this.service.updateStatus(Number(id), dto.status_bayar); 
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Lihat detail peminjaman berdasarkan ID' })
   findOne(@Param('id') id: string) {
@@ -185,4 +178,14 @@ export class PeminjamanController {
     
     return this.service.findOne(idNumber);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(user_role.ADMIN) 
+  @Delete(':id')
+  @ApiOperation({ summary: 'Admin menghapus data transaksi peminjaman' })
+  remove(@Param('id') id: string) {
+    return this.service.remove(Number(id));
+  }
+
 }

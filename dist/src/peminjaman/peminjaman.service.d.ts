@@ -115,4 +115,7 @@ export declare class PeminjamanService {
         tanggalKembali: Date | null;
         status: import(".prisma/client").$Enums.peminjaman_status;
     }>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }
