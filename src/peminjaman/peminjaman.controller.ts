@@ -39,7 +39,6 @@ const uploadToCloudinary = (file: any): Promise<any> => {
 export class PeminjamanController {
   constructor(private readonly service: PeminjamanService) { }
 
-  // 🌟 1. RUTE POST UNTUK ADMIN/PETUGAS INPUT MANUAL DI KASIR
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(user_role.ADMIN, user_role.PETUGAS)
