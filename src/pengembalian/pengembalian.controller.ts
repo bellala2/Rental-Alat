@@ -85,26 +85,4 @@ export class PengembalianController {
     return this.pengembalianService.findOne(Number(id));
   }
   
-@ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(user_role.ADMIN) 
-  @Put(':id')
-  @ApiOperation({ summary: 'Admin mengubah data riwayat pengembalian (Formalitas CRUD)' })
-  async update(@Param('id') id: string, @Body() body: any) {
-    const dataUpdate: any = {};
-    
-    if (body.peminjamanId) dataUpdate.peminjamanId = Number(body.peminjamanId);
-    if (body.totalDenda !== undefined) dataUpdate.totalDenda = Number(body.totalDenda);
-    
-    return this.pengembalianService.update(Number(id), dataUpdate);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(user_role.ADMIN) 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Admin menghapus data riwayat pengembalian (Formalitas CRUD)' })
-  async remove(@Param('id') id: string) {
-    return this.pengembalianService.remove(Number(id));
-  }
 }

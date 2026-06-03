@@ -179,13 +179,4 @@ export class PeminjamanController {
     return this.service.findOne(idNumber);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(user_role.ADMIN) 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Admin menghapus data transaksi peminjaman' })
-  remove(@Param('id') id: string) {
-    return this.service.remove(Number(id));
-  }
-
 }

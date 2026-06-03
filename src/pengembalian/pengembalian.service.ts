@@ -83,24 +83,4 @@ export class PengembalianService {
     return data;
   }
 
-  async update(id: number, dto: UpdatePengembalianDto) {
-    const cekPengembalian = await this.prisma.pengembalian.findUnique({
-      where: { id },
-    });
-    if (!cekPengembalian) throw new NotFoundException('Data pengembalian tidak ditemukan!');
-
-    return this.prisma.pengembalian.update({
-      where: { id },
-      data: {
-        totalDenda: dto.totalDenda !== undefined ? dto.totalDenda : cekPengembalian.totalDenda
-      },
-    });
-  }
-
-  async remove(id: number) {
-    const data = await this.prisma.pengembalian.findUnique({ where: { id } });
-    if (!data) throw new NotFoundException('Data tidak ditemukan!');
-    
-    return this.prisma.pengembalian.delete({ where: { id } });
-  }
 }
